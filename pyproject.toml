@@ -16,7 +16,7 @@ keyring = "^23"
 pick = "^2.0.2"
 
 [tool.poetry.dev-dependencies]
-flake8 = "^5.0.4"
+flake8 = "^6.0.0"
 pytest = "^7.0.1"
 
 [tool.poetry.scripts]
