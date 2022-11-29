@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "falcon-toolkit"
+version = "3.0.0"
+description = "Toolkit to interface with CrowdStrike Falcon via the API"
+authors = ["Chris Hammond <chris.hammond@crowdstrike.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+caracara = "^0.2"
+click = "^8.1.3"
+click-option-group = "^0.5.3"
+click-spinner = "^0.1.10"
+cmd2 = "^2.4"
+colorama = "^0.4.5"
+keyring = "^23"
+pick = "^2.0.2"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^5.0.4"
+pytest = "^7.0.1"
+
+[tool.poetry.scripts]
+falcon = "falcon_toolkit.falcon:cli"
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^2.15.4"
+pydocstyle = "^6.1.1"
+toml = "^0.10.2"
+
+[tool.pylint.messages_control]
+disable = [
+    # This is required beacuse of the (delibrate) copy/paste code between the various authentication
+    # backends.
+    "duplicate-code",
+
+    # no-member is usually a high fidelity pylint pattern, but FalconRecursiveNamespace breaks it.
+    "no-member",
+
+    # Some files in this tool are very long to handle implementing large amounts of Falcon
+    # functionality, like RTR commands.
+    # Files are kept short where possible, but sometimes a saving 10s of lines is not worth
+    # refactoring 100s of lines for the sake of sating this rule.
+    "too-many-lines",
+
+    # This tool makes extensive use of other libraries, such as Cmd2, which may provide variables to
+    # functions that we do not need to use. Alternatives are harder to maintain for little gain.
+    "unused-argument",
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0a5"]
+build-backend = "poetry.core.masonry.api"
