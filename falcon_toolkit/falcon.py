@@ -134,6 +134,7 @@ def cli(
     log_path = os.path.join(config_path, LOG_SUB_DIR)
     log_filename_base = configure_logger(
         log_path=log_path,
+        profile_name=profile,
         log_level=log_level,
         log_compression=True,
     )
