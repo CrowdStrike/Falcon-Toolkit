@@ -46,8 +46,8 @@ def _reg_set_builder(args: Namespace) -> str:
                 f'reg set {args.subkey} {args.value_name} '
                 f'-ValueType={args.value_type} -Value={args.data}'
             )
-        else:
-            raise CommandBuilderException("You must specify a value name, type and data together")
+
+        raise CommandBuilderException("You must specify a value name, type and data together")
 
     return f'reg set {args.subkey}'
 
