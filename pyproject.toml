@@ -2,7 +2,30 @@
 name = "falcon-toolkit"
 version = "3.0.0"
 description = "Toolkit to interface with CrowdStrike Falcon via the API"
-authors = ["Chris Hammond <chris.hammond@crowdstrike.com>"]
+license = "MIT"
+authors = [
+    "Chris Hammond <chris.hammond@crowdstrike.com>",
+]
+repository = "http://github.com/CrowdStrike/Falcon-Toolkit"
+readme = "README.md"
+keywords = [
+    "automation",
+    "cli",
+    "crowdstrike",
+    "endpoint-protection", 
+    "falcon",
+    "falcon-platform",
+]
+classifiers = [
+    "Natural Language :: English",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Security",
+    "Topic :: System :: Shells",
+    "Topic :: Terminals",
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
