@@ -1,0 +1,38 @@
+name: Falcon Toolkit Code Quality
+on:
+  push:
+    paths:
+      - '**.py'
+      - '**.yml'
+    branches:
+      - main
+      - 'ver_*'
+    tags:
+      - 'v*'
+  pull_request:
+
+jobs:
+  codequality:
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Poetry via pipx
+      run: pipx install poetry
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'poetry'
+    - name: Install dependencies
+      run: poetry install
+    - name: Lint package source with flake8
+      run: poetry run flake8 falcon_toolkit/ --show-source --statistics
+    - name: Lint package source with pylint
+      if: success() || failure()
+      run: poetry run pylint falcon_toolkit/
+    - name: Lint package docstrings and comments with pydocstyle
+      if: success() || failure()
+      run: poetry run pydocstyle falcon_toolkit/
