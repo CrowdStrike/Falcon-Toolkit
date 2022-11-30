@@ -31,6 +31,8 @@ jobs:
     - name: Lint package source with flake8
       run: poetry run flake8 falcon_toolkit/ --show-source --statistics
     - name: Lint package source with pylint
+      if: success() || failure()
       run: poetry run pylint falcon_toolkit/
     - name: Lint package docstrings and comments with pydocstyle
+      if: success() || failure()
       run: poetry run pydocstyle falcon_toolkit/
