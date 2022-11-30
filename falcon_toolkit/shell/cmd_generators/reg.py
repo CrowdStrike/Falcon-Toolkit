@@ -12,16 +12,16 @@ def _reg_delete_builder(args: Namespace) -> str:
     """Build a reg delete command string."""
     if args.value:
         return f'reg delete {args.subkey} {args.value}'
-    else:
-        return f'reg delete {args.subkey}'
+
+    return f'reg delete {args.subkey}'
 
 
 def _reg_load_builder(args: Namespace) -> str:
     """Build a reg load command string."""
     if args.troubleshooting:
         return f'reg load {args.filename} {args.subkey} -Troubleshooting'
-    else:
-        return f'reg load {args.filename} {args.subkey}'
+
+    return f'reg load {args.filename} {args.subkey}'
 
 
 def _reg_query_builder(args: Namespace) -> str:
@@ -31,10 +31,11 @@ def _reg_query_builder(args: Namespace) -> str:
 
     if args.subkey and args.value:
         return f'reg query {args.subkey} {args.value}'
-    elif args.subkey and not args.value:
+
+    if args.subkey and not args.value:
         return f'reg query {args.subkey}'
-    else:
-        return 'reg query'
+
+    return 'reg query'
 
 
 def _reg_set_builder(args: Namespace) -> str:
@@ -48,16 +49,15 @@ def _reg_set_builder(args: Namespace) -> str:
         else:
             raise CommandBuilderException("You must specify a value name, type and data together")
 
-    else:
-        return f'reg set {args.subkey}'
+    return f'reg set {args.subkey}'
 
 
 def _reg_unload_builder(args: Namespace) -> str:
     """Build a reg unload command string."""
     if args.troubleshooting:
         return f'reg unload {args.subkey} -Troubleshooting'
-    else:
-        return f'reg unload {args.subkey}'
+
+    return f'reg unload {args.subkey}'
 
 
 def reg_builder(args: Namespace) -> str:
