@@ -49,3 +49,18 @@ def configure_data_dir(config_dir: str):
     logs_path = os.path.join(config_dir, LOG_SUB_DIR)
     if not os.path.exists(logs_path):
         os.mkdir(logs_path)
+
+
+def filename_safe_string(unsafe_string: str) -> str:
+    """Convert an unsafe string to one that can be included in a filename.
+
+    This function is heavily inspired by https://stackoverflow.com/a/7406369.
+    """
+    safe_string = "".join(
+        [c for c in unsafe_string if c.isalpha() or c.isdigit() or c == ' ']
+    ).rstrip()
+
+    # Replace spaces with underscores to match the general format of the log filename
+    clean_string = safe_string.replace(' ', '_')
+
+    return clean_string
