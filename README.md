@@ -1,3 +1,4 @@
+<!--markdownlint-disable MD033-->
 # Falcon Toolkit
 
 ![CrowdStrike Falcon](https://raw.githubusercontent.com/CrowdStrike/falconpy/main/docs/asset/cs-logo.png)
@@ -81,7 +82,9 @@ When installed via `pipx`, you can upgrade Falcon Toolkit by simply running:
 
 ```shell
 $ pipx upgrade falcon-toolkit
+falcon-toolkit is already at latest version 3.0.1
 ```
+
 </details>
 
 <details>
@@ -164,7 +167,6 @@ Falcon Toolkit requires you to pre-configure profiles, consisting of:
 
 Once these options are configured, you do not need to specify a client ID/secret again for communicating with that client. The configurations are saved in the file `~/FalconToolkit/FalconToolkit.json`, and the client secret for each corresponding client ID is stored in your host's local secure storage environment (e.g., via DPAPI on Windows, the Keychain on macOS, or Gnome's secret store on Linux). This keeps your client secrets secure and encrypted using your logon password.
 
-
 #### Creating a New Profile
 
 The command `falcon profiles new` will guide you through creating a new configuration. Note that:
@@ -173,6 +175,41 @@ The command `falcon profiles new` will guide you through creating a new configu
 - The client ID and secret you specify must have full RTR admin and host querying permissions enabled; otherwise, this tool will not be able to execute any commands.
 
 Two types of configuration backends are provided out of the box: the default, which is for an API keypair associated with a standard Falcon tenant, and a Falcon Flight Control backend. Use the Flight Control backend when authenticating to a Parent CID, as you will be able to specify the desired child CID on execution.
+
+Your API keys should have the following scopes enabled in the Falcon dashboard:
+
+<table>
+    <tr>
+        <th>
+            &darr; API Scopes // Commands &rarr;
+        </th>
+        <th style="text-align: center;"><code>host_search</code></th>
+        <th style="text-align: center;"><code>shell</code></th>
+    </tr>
+    <tr>
+        <th>Hosts: Read</th>
+        <td style="text-align: center;">X</td>
+        <td style="text-align: center;">X</td>
+    </tr>
+    <tr>
+        <th>Real Time Response: Read</th>
+        <td></td>
+        <td style="text-align: center;">X</td>
+    </tr>
+    <tr>
+        <th>Real Time Response: Write</th>
+        <td></td>
+        <td style="text-align: center;">X</td>
+    </tr>
+    <tr>
+        <th>Real Time Response Admin: Write</th>
+        <td></td>
+        <td style="text-align: center;">
+            X<br>
+            <em>for admin commands</em>
+        </td>
+    </tr>
+</table>
 
 #### Showing Your Profiles
 
