@@ -4,7 +4,9 @@
 ![CrowdStrike Falcon](https://raw.githubusercontent.com/CrowdStrike/falconpy/main/docs/asset/cs-logo.png)
 
 [![Twitter URL](https://img.shields.io/twitter/url?label=Follow%20%40CrowdStrike&style=social&url=https%3A%2F%2Ftwitter.com%2FCrowdStrike)](https://twitter.com/CrowdStrike)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/CrowdStrike/Falcon-Toolkit/Publish%20Python%20Package?label=build%20and%20deploy)
 [![PyPI](https://img.shields.io/pypi/v/Falcon-Toolkit)](https://pypi.org/project/Falcon-Toolkit)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Falcon-Toolkit)
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/CrowdStrike/Falcon-Toolkit)
 
 ***automate all the things...remotely!***
@@ -155,7 +157,7 @@ $ falcon
 
 </details>
 
-### Profile Management
+## Profile Management
 
 Falcon Toolkit requires you to pre-configure profiles, consisting of:
 
@@ -167,7 +169,7 @@ Falcon Toolkit requires you to pre-configure profiles, consisting of:
 
 Once these options are configured, you do not need to specify a client ID/secret again for communicating with that client. The configurations are saved in the file `~/FalconToolkit/FalconToolkit.json`, and the client secret for each corresponding client ID is stored in your host's local secure storage environment (e.g., via DPAPI on Windows, the Keychain on macOS, or Gnome's secret store on Linux). This keeps your client secrets secure and encrypted using your logon password.
 
-#### Creating a New Profile
+### Creating a New Profile
 
 The command `falcon profiles new` will guide you through creating a new configuration. Note that:
 
@@ -178,40 +180,14 @@ Two types of configuration backends are provided out of the box: the default, wh
 
 Your API keys should have the following scopes enabled in the Falcon dashboard:
 
-<table>
-    <tr>
-        <th>
-            &darr; API Scopes // Commands &rarr;
-        </th>
-        <th style="text-align: center;"><code>host_search</code></th>
-        <th style="text-align: center;"><code>shell</code></th>
-    </tr>
-    <tr>
-        <th>Hosts: Read</th>
-        <td style="text-align: center;">X</td>
-        <td style="text-align: center;">X</td>
-    </tr>
-    <tr>
-        <th>Real Time Response: Read</th>
-        <td></td>
-        <td style="text-align: center;">X</td>
-    </tr>
-    <tr>
-        <th>Real Time Response: Write</th>
-        <td></td>
-        <td style="text-align: center;">X</td>
-    </tr>
-    <tr>
-        <th>Real Time Response Admin: Write</th>
-        <td></td>
-        <td style="text-align: center;">
-            X<br>
-            <em>for admin commands</em>
-        </td>
-    </tr>
-</table>
+| &darr; API Scopes // Commands &rarr; | `host_search` | `shell` |
+|--------------------------------------|:-------------:|:-------:|
+| **Hosts: Read**                      |       X       |    X    |
+| **Real Time Response: Read**         |               |    X    |
+| **Real Time Response: Write**        |               |    X    |
+| **Real Time Response: Admin**        |               |    X<br>*for admin commands*    |
 
-#### Showing Your Profiles
+### Showing Your Profiles
 
 The command `falcon profiles list` will show you all configurations (if any) you have created using the `new` command above, listed by the name you specified.
 
@@ -226,11 +202,11 @@ ServicesTest
     Test instance for Services
 ```
 
-#### Deleting a Profile
+### Deleting a Profile
 
 The command `falcon profiles delete [Profile Name]` will delete a configuration for you. Use the name you defined when you created the profile via `falcon profiles new`.
 
-#### Selecting a Profile
+### Selecting a Profile
 
 If you have configured one profile, Falcon Toolkit will use it by default. If you have multiple profiles, you must select one using `-p`, like this:
 
@@ -240,11 +216,11 @@ Falcon Toolkit
 ...
 ```
 
-### Listing Filters
+## Listing Filters
 
 A key part of this tool (as we'll see later) is filter support. To see what filters are supported by the Falcon Toolkit and FalconPy, run `falcon filters`. Each filter is listed and explained with examples.
 
-### Host Search
+## Host Search
 
 Before jumping into an RTR shell, you may wish to see which hosts you would connect to if you used the `shell` command (covered below). To do so, use the `falcon host_search` command.
 
@@ -274,7 +250,7 @@ List all `MyOtherCompany` Windows Workstations that have checked in to Falcon wi
 falcon -p MyOtherCompany host_search -f OS=Windows -f Role=Workstation -f LastSeen__GTE=-30m
 ```
 
-### Jump into an RTR Shell
+## Jump into an RTR Shell
 
 Now that you know how to filter, you know how to jump into a shell! To get into a batch shell with no special options, just do the same as for a `host_search` but use the `shell` command instead. For example, to launch an RTR shell with all Windows hosts last seen within the past 30 minutes within the `MyCompany` Falcon instance, use this command:
 
