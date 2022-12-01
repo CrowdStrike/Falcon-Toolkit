@@ -22,21 +22,72 @@ The toolkit provides:
 
 Since this is built on top of Caracara, you get a bunch of great functionality and flexibility free, including the ability to filter hosts using dynamically generated FQL queries, full debug logging where desired, Falcon Flight Control integration, and more! Plus, the tool is lightning quick as it leverages Caracara's parallelisation tricks to pull more information quickly.
 
-## Basic Concepts
-
-Falcon Toolkit requires you to pre-configure profiles, consisting of:
-
-- A name (such as for a client or Falcon tenant);
-- An optional description;
-- A Falcon API client ID;
-- A corresponding Falcon API client secret; and
-- Optionally, the desired cloud, although this can be automatically figured out based on magic provided by [FalconPy](https://falconpy.io) provided you are not a GovCloud customer.
-
-Once these options are configured, you do not need to specify a client ID/secret again for communicating with that client. The configurations are saved in the file `~/FalconToolkit/FalconToolkit.json`, and the client secret for each corresponding client ID is stored in your host's local secure storage environment (e.g., via DPAPI on Windows, the Keychain on macOS, or Gnome's secret store on Linux). This keeps your client secrets secure and encrypted using your logon password.
-
-Once you are within an RTR shell, you can run any command that you can run within standard RTR, with full usage, tab completion and examples. However, note that some commands (such as `reg` and `runscript`) have been slightly adjusted in their usage to match standard Unix command patterns. There are technical reasons for this; reach out to me if you need support. Furthermore, some commands have been augmented or added, such as `runscript -WorkstationPath` which allows you to run a local script without making it a cloud file first, `get_status` to check on file uploads, and `download` to pull files retrieved via `get` down to your local system.
-
 ## Getting Started
+
+There are two supported methods to install Falcon Toolkit.
+
+<details>
+<summary>
+<h3>Recommended for Most Users: <code>pipx</code></h3>
+</summary>
+
+### Installing Falcon Toolkit with `pipx`
+
+[`pipx`](https://pypa.github.io/pipx/) is a tool published the Python Packaging Authority to ease the install of Python tools. It will automatically configure you a virtual environment and make a link the `falcon` command that your shell can work with.
+
+Follow the instructions to install `pipx` and add its `bin` folder to your `PATH` variable. Then, use `pipx` to install the `falcon-toolkit` PyPI package. Your output should look like this:
+
+```shell
+$ pipx install falcon-toolkit
+installed package falcon-toolkit 3.0.1, installed using Python 3.11.0
+  These apps are now globally available
+    - falcon
+```
+
+Once installed, run the `falcon` command to test it.
+
+#### Configuring `readline` when installed via `pipx`
+
+If you see a message like this, read on...
+
+```shell
+$ falcon
+Readline features including tab completion have been disabled because
+no supported version of readline was found. To resolve this, install
+pyreadline3 on Windows or gnureadline on Linux/Mac.
+```
+
+This is caused by Python installations compiled against a non-supported `readline` library, such as `libedit` on macOS. To fix it, run the following command to install a supported readline library.
+
+Windows:
+
+```shell
+> pipx inject falcon-toolkit pyreadline3
+injected package pyreadline3 into venv falcon-toolkit
+done! ✨ 🌟 ✨
+```
+
+Linux or macOS:
+
+```shell
+$ pipx inject falcon-toolkit gnureadline
+injected package gnureadline into venv falcon-toolkit
+done! ✨ 🌟 ✨
+```
+
+#### Upgrading Falcon Toolkit when installed via `pipx`
+
+When installed via `pipx`, you can upgrade Falcon Toolkit by simply running:
+
+```shell
+$ pipx upgrade falcon-toolkit
+```
+</details>
+
+<details>
+<summary>
+<h3>Installing via Poetry (Recommended for Developers and Maintainers)</h3>
+</summary>
 
 This tool is built using [Poetry](https://python-poetry.org) and Python 3. Therefore, you must first ensure that you have both Poetry and Python 3.9+ installed to make use of this tool. Ensure you pay attention to Step 3 of the [Poetry installation instructions](https://python-poetry.org/docs/master/#installing-with-the-official-installer) so that you get Poetry added to your shell's `PATH` variable.
 
@@ -48,13 +99,73 @@ Finally, run the `falcon` command to get started! If this succeeds and you get s
 
 If you close your shell, simply run `poetry shell` to get back in to the virtual environment. This will bring back the `falcon` command.
 
-You will soon be able to install this with `pip`. Watch this space as we get this configured!
+#### Configuring `readline` when installed via Poetry
 
-## Updating the Toolkit
+If you see a message like this, read on...
 
-To update Falcon Toolkit, run `git pull` to get the latest code from the `main` branch, then run `poetry install` to get the latest requirements configured.
+```shell
+$ falcon
+Readline features including tab completion have been disabled because
+no supported version of readline was found. To resolve this, install
+pyreadline3 on Windows or gnureadline on Linux/Mac.
+```
 
-### Creating a New Profile
+This is caused by Python installations compiled against a non-supported `readline` library, such as `libedit` on macOS. To fix it, run the following commands to install a supported readline library.
+
+Windows:
+
+```shell
+# Enter the Poetry virtual environment
+> poetry shell
+
+# Install pyreadline3 in the virtual environment
+> pip install pyreadline3
+```
+
+Linux or macOS:
+
+```shell
+# Enter the Poetry virtual environment
+$ poetry shell
+
+# Install gnureadline in the virtual environment
+$ pip install gnureadline
+```
+
+#### Upgrading Falcon Toolkit when installed via Poetry
+
+When installed via Poetry, you have to follow two steps to upgrade the tool. First update your local copy of the Git repository, then install the updated dependencies.
+
+```shell
+# Update the code
+$ git pull
+
+# Update the requirements
+$ poetry install
+
+# Enter the virtual environment if you are not already in it
+$ poetry shell
+
+# Run Falcon Toolkit
+$ falcon
+```
+
+</details>
+
+### Profile Management
+
+Falcon Toolkit requires you to pre-configure profiles, consisting of:
+
+- A name (such as for a client or Falcon tenant);
+- An optional description;
+- A Falcon API client ID;
+- A corresponding Falcon API client secret; and
+- Optionally, the desired cloud, although this can be automatically figured out based on magic provided by [FalconPy](https://falconpy.io) provided you are not a GovCloud customer.
+
+Once these options are configured, you do not need to specify a client ID/secret again for communicating with that client. The configurations are saved in the file `~/FalconToolkit/FalconToolkit.json`, and the client secret for each corresponding client ID is stored in your host's local secure storage environment (e.g., via DPAPI on Windows, the Keychain on macOS, or Gnome's secret store on Linux). This keeps your client secrets secure and encrypted using your logon password.
+
+
+#### Creating a New Profile
 
 The command `falcon profiles new` will guide you through creating a new configuration. Note that:
 
@@ -63,7 +174,7 @@ The command `falcon profiles new` will guide you through creating a new configu
 
 Two types of configuration backends are provided out of the box: the default, which is for an API keypair associated with a standard Falcon tenant, and a Falcon Flight Control backend. Use the Flight Control backend when authenticating to a Parent CID, as you will be able to specify the desired child CID on execution.
 
-### Showing Your Profiles
+#### Showing Your Profiles
 
 The command `falcon profiles list` will show you all configurations (if any) you have created using the `new` command above, listed by the name you specified.
 
@@ -78,11 +189,11 @@ ServicesTest
     Test instance for Services
 ```
 
-### Deleting a Profile
+#### Deleting a Profile
 
 The command `falcon profiles delete [Profile Name]` will delete a configuration for you. Use the name you defined when you created the profile via `falcon profiles new`.
 
-### Selecting a Profile
+#### Selecting a Profile
 
 If you have configured one profile, Falcon Toolkit will use it by default. If you have multiple profiles, you must select one using `-p`, like this:
 
@@ -140,17 +251,25 @@ You can also specify an initial timeout to use for all RTR commands. By default,
 falcon -p MyCompany shell -f OS=Windows -t 60
 ```
 
-Once in the shell, you can run `help` at any time to get a list of commands. Every command also supports the `-h` switch to find out how it works. Run `quit` at any time to get back to your command line.
+Once you are within an RTR shell, you can run any command that you can run within standard RTR, with full usage, tab completion and examples. However, note that some commands (such as `reg` and `runscript`) have been slightly adjusted in their usage to match standard Unix command patterns. There are technical reasons for this; reach out to us if you need support. Furthermore, some commands have been augmented or added, such as `runscript -WorkstationPath` which allows you to run a local script without making it a cloud file first, `get_status` to check on file uploads, and `download` to pull files retrieved via `get` down to your local system.
+
+You can run `help` at any time within the shell to get a list of commands. Every command also supports the `-h` switch to find out how it works. Run `quit` at any time to get back to your command line.
 
 All outputs are written to a log file, as well as a CSV alongside it showing the output from every host. If you run this tool against many hosts, you will see the output from the first in the list on screen. However, every host's output (from `stdout` and `stderr`) is written to the accompanying CSV.
 
 All logs and CSVs are written to the `logs` folder within your configuration directory (default: `~/FalconToolkit`).
 
-### Scripting
+### Real Time Response (RTR) Scripting
 
-Remember we said you can script this? Well, here is how you do it!
+The RTR shell is fully scriptable. There are two different scripting methods supported:
 
-#### Command Replay Script
+- Command replay scripts that simulate a human typing commands into the shell; and
+- Python scripts that can interact with the shell programmatically at runtime.
+
+<details>
+<summary>
+<h4>Command Replay Script</h4>
+</summary>
 
 If you have a file on disk with all shell commands you wish to run, you can specify it as a command line switch:
 
@@ -167,7 +286,12 @@ runscript -Raw "Get-ChildItem"
 quit
 ```
 
-#### Python Scripting API
+</details>
+
+<details>
+<summary>
+<h4>Python Scripting API</h4>
+</summary>
 
 This tool is build on top of the excellent [Cmd2](https://cmd2.readthedocs.io/) Python library, which brings with it copious extensibility. It is possible to write Python scripts that run within the context of the Toolkit's shell with programmatic logic applied. This feature is very much in beta, and we are actively seeking feedback on which state data should be made available globally to aid in programmatic scripting of the shell.
 
@@ -181,6 +305,8 @@ Some example usages of this functionality are as follows:
 - Execute a batch `get` command and then cache the contents of `self.last_batch_get_successful_requests` to find out how many systems had the file on disk. Then, the script could wait `x` seconds in a loop up to a maximum amount of time, running `get_status` each time. On each iteration, the script may query `self.last_batch_get_completed_uploads` to determine whether a minimum threshold of systems have uploaded the requested file, and then once complete execute `download -e /some/output/folder` to pull those completed uploads down to a folder of choice (then extract them automatically).
 - Execute a series of commands that differ by target OS, using the contents of `self.connected_devices` to make decisions dynamically.
 - Execute `self.send_generic_command` directly, then use the returned `(stdout, stderr)` tuple to make decisions about which command to execute next (best suited to single system connections).
+
+</details>
 
 ## Support & Community Forums
 
