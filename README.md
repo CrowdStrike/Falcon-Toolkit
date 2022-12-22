@@ -182,6 +182,7 @@ Your API keys should have the following scopes enabled in the Falcon dashboard:
 
 | &darr; API Scopes // Commands &rarr; | `host_search` | `shell` |
 |--------------------------------------|:-------------:|:-------:|
+| **Falcon Flight Control: Read**      | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* |
 | **Hosts: Read**                      |       X       |    X    |
 | **Real Time Response: Read**         |               |    X    |
 | **Real Time Response: Write**        |               |    X    |
@@ -271,6 +272,34 @@ You can run `help` at any time within the shell to get a list of commands. Every
 All outputs are written to a log file, as well as a CSV alongside it showing the output from every host. If you run this tool against many hosts, you will see the output from the first in the list on screen. However, every host's output (from `stdout` and `stderr`) is written to the accompanying CSV.
 
 All logs and CSVs are written to the `logs` folder within your configuration directory (default: `~/FalconToolkit`).
+
+### Specifying Hosts by ID
+
+Although Falcon Toolkit provides you with plenty of filtering options, sometimes you may wish to connect to hosts by Agent ID (AID) / Device ID. You can do this using two command line options.
+
+#### Specifying Device IDs at the Command Line: The `-d` Option
+
+To specify Device IDs at the command line, simply provide the `--device-id-list` / `-d` option and a comma-delimited list of IDs. For example, to connect to two hosts with the AIDs `abcdef12345` and `ghijkl67890`, you could use the following command:
+
+```shell
+falcon -p ProfileName shell -d abcdef12345,ghijkl67890
+```
+
+#### Specifying a File Containing Device IDs: The `-df` Option
+
+Sometimes it is not practical to provide a list of Device IDs at the command line, often because the length of the string containing all the IDs would exceed the maximum command length allowable within your shell. To get around this, Falcon Toolkit provides another parameter (`----device-id-file` / `-df`), which allows you to provide a path to a file containing a list of AIDs, one per line. For example, let's say you wanted to connect to two devices with the AIDs `abcdef12345` and `ghijkl67890`, you may have a file named `device_ids.txt` with the following contents:
+
+```
+abcdef12345
+ghijkl67890
+```
+
+Then, you could jump into a shell with these devices via this Falcon Toolkit command:
+
+```shell
+falcon -p ProfileName shell -df device_ids.txt
+```
+
 
 ### Real Time Response (RTR) Scripting
 
