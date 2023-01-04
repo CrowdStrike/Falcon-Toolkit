@@ -143,7 +143,13 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
         ))
         logging.info("Connecting to the device IDs provided on the command line")
 
-        device_ids = device_id_list.split(",")
+        device_ids = set()
+        for device_id in device_id_list.split(","):
+            device_id = device_id.strip()
+            if device_id:
+                device_ids.add(device_id)
+
+        device_ids = list(device_ids)
     elif device_id_file:
         click.echo(click.style(
             "Connecting to the device IDs listed in a file",
@@ -155,7 +161,12 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
         logging.info("Connecting to the device IDs listed in %s", device_id_file)
 
         with open(device_id_file, 'rt', encoding='ascii') as device_id_file_handle:
-            device_ids = [line.strip() for line in device_id_file_handle]
+            device_ids = set()
+            for line in device_id_file_handle:
+                line = line.strip()
+                if line:
+                    device_ids.add(line)
+            device_ids = list(device_ids)
     else:
         click.echo(click.style(
             "WARNING: Connecting to all hosts in the Falcon instance",
