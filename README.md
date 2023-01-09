@@ -287,7 +287,7 @@ falcon -p ProfileName shell -d abcdef12345,ghijkl67890
 
 #### Specifying a File Containing Device IDs: The `-df` Option
 
-Sometimes it is not practical to provide a list of Device IDs at the command line, often because the length of the string containing all the IDs would exceed the maximum command length allowable within your shell. To get around this, Falcon Toolkit provides another parameter (`----device-id-file` / `-df`), which allows you to provide a path to a file containing a list of AIDs, one per line. For example, let's say you wanted to connect to two devices with the AIDs `abcdef12345` and `ghijkl67890`, you may have a file named `device_ids.txt` with the following contents:
+Sometimes it is not practical to provide a list of Device IDs at the command line, often because the length of the string containing all the IDs would exceed the maximum command length allowable within your shell. To get around this, Falcon Toolkit provides another parameter (`--device-id-file` / `-df`), which allows you to provide a path to a file containing a list of AIDs, one per line. For example, let's say you wanted to connect to two devices with the AIDs `abcdef12345` and `ghijkl67890`, you may have a file named `device_ids.txt` with the following contents:
 
 ```
 abcdef12345
