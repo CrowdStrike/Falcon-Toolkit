@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "falcon-toolkit"
-version = "3.0.2"
+version = "3.1.0"
 description = "Toolkit to interface with CrowdStrike Falcon via the API"
 license = "MIT"
 authors = [
