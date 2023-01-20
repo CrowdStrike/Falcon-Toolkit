@@ -3,21 +3,15 @@
 This file contains the command line interface for the policies commands. The implementation
 of the logic itself is contained in other files, including policies.py
 """
-import json
 import os
 
-from typing import (
-    List,
-    Union,
-)
+from typing import List
 
 import click
 import pick
 
 from caracara import Client
 from caracara.common.policy_wrapper import Policy
-from caracara.modules.prevention_policies import PreventionPoliciesApiModule
-from caracara.modules.response_policies import ResponsePoliciesApiModule
 
 from click_option_group import (
     optgroup,
@@ -25,13 +19,9 @@ from click_option_group import (
 )
 
 from falcon_toolkit.common.cli import get_instance
+from falcon_toolkit.policies.constants import PoliciesAPIModule
 from falcon_toolkit.policies.describe import pretty_print_policies
-
-
-PoliciesAPIModule = Union[
-    PreventionPoliciesApiModule,
-    ResponsePoliciesApiModule,
-]
+from falcon_toolkit.policies.container import PolicyContainer
 
 
 @click.group(
@@ -127,18 +117,13 @@ def policies_export(ctx: click.Context):
 
         reasonable_filename = True
 
-    policy_data = chosen_policy.flat_dump()
+    policy_container = PolicyContainer(
+        policy=chosen_policy,
+        policy_type=policies_type,
+    )
 
-    export_data = {
-        "format_version": 1,
-        "name": chosen_policy.name,
-        "platform_name": chosen_policy.platform_name,
-        "policy_type": policies_type,
-        "settings_key_name": chosen_policy.settings_key_name,
-        "settings": policy_data[chosen_policy.settings_key_name],
-    }
     with open(filename, 'wt', encoding='utf-8') as export_file_handle:
-        json.dump(export_data, export_file_handle, indent=2)
+        export_file_handle.write(policy_container.dumps())
 
     click.echo("Export complete")
 
@@ -158,12 +143,19 @@ def policies_import(
 ):
     """Import a Prevention or Response policy from the JSON file named FILENAME."""
     policies_api: PoliciesAPIModule = ctx.obj['policies_api']
-    policies_type: str = ctx.obj['policies_type']
-    with open(filename, 'rb') as policy_file_handle:
-        policy_obj = json.load(policy_file_handle)
 
-    new_policy = policies_api.new_policy(policy_obj['platform_name'])
-    # TODO: Finish this function
+    click.echo(f"Loading policy in the file: {filename}")
+
+    with open(filename, 'rt', encoding='utf-8') as policy_file_handle:
+        policy_str = str(policy_file_handle.read())
+
+    policy_container = PolicyContainer.loads(policy_str)
+
+    click.echo(f"Uploiading the {policy_container.policy.name} policy to Falcon")
+    policies_api.push_policy(policy_container.policy)
+
+    click.echo("Done!")
+
 
 cli_policies.add_command(policies_describe)
 cli_policies.add_command(policies_export)
