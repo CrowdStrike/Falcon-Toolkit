@@ -346,14 +346,14 @@ test = ["click", "pytest", "six"]
 
 [[package]]
 name = "cmd2"
-version = "2.4.2"
+version = "2.4.3"
 description = "cmd2 - quickly build feature-rich and user-friendly interactive command line applications in Python"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "cmd2-2.4.2-py3-none-any.whl", hash = "sha256:a77e3056751393270b4125c990cf527db132f15951a20a3a5dd2df4290aadf20"},
-    {file = "cmd2-2.4.2.tar.gz", hash = "sha256:073e555c05853b0f6965f3d03329babdf9e38a5f2cea028e61a64cd7eeb74ad5"},
+    {file = "cmd2-2.4.3-py3-none-any.whl", hash = "sha256:f1988ff2fff0ed812a2d25218a081b0fa0108d45b48ba2a9272bb98091b654e6"},
+    {file = "cmd2-2.4.3.tar.gz", hash = "sha256:71873c11f72bd19e2b1db578214716f0d4f7c8fa250093c601265a9a717dee52"},
 ]
 
 [package.dependencies]
@@ -363,9 +363,9 @@ pyreadline3 = {version = "*", markers = "sys_platform == \"win32\""}
 wcwidth = ">=0.1.7"
 
 [package.extras]
-dev = ["codecov", "doc8", "flake8", "invoke", "mypy (==0.902)", "nox", "pytest (>=4.6)", "pytest-cov", "pytest-mock", "sphinx", "sphinx-autobuild", "sphinx-rtd-theme", "twine (>=1.11)"]
+dev = ["codecov", "doc8", "flake8", "invoke", "mypy", "nox", "pytest (>=4.6)", "pytest-cov", "pytest-mock", "sphinx", "sphinx-autobuild", "sphinx-rtd-theme", "twine (>=1.11)"]
 test = ["codecov", "coverage", "gnureadline", "pytest (>=4.6)", "pytest-cov", "pytest-mock"]
-validate = ["flake8", "mypy (==0.902)", "types-pkg-resources"]
+validate = ["flake8", "mypy", "types-pkg-resources"]
 
 [[package]]
 name = "colorama"
