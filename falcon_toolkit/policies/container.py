@@ -7,7 +7,7 @@ import json
 
 from typing import Dict, List, Type
 
-from caracara.common.policy_wrapper import Policy, PolicySettingGroup
+from caracara.common.policy_wrapper import Policy
 
 from falcon_toolkit.policies.constants import POLICY_TYPES
 
@@ -74,17 +74,20 @@ class PolicyContainer:
                 str(POLICY_TYPES)
             )
 
-        policy = Policy(style=policy_type)
-        policy.description: str = import_data.get("description", "Imported by Falcon Toolkit")
-        policy.enabled = enabled
-        policy.name = name
-        policy.platform_name = platform_name
-        policy.settings_key_name = settings_key_name
+        description: str = import_data.get("description", "Imported by Falcon Toolkit")
 
-        for settings_group in settings_groups:
-            policy.settings_groups.append(PolicySettingGroup(data_dict=settings_group))
+        policy_dict = {
+            "description": description,
+            "enabled": enabled,
+            "name": name,
+            "platform_name": platform_name,
+            settings_key_name: settings_groups,
+        }
+        policy = Policy(data_dict=policy_dict, style=policy_type)
 
         policy_container: Type["PolicyContainer"] = cls(
-            policy, policy_type, format_version,
+            policy,
+            policy_type,
+            format_version,
         )
         return policy_container

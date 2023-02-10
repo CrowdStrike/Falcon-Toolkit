@@ -151,7 +151,7 @@ def policies_import(
 
     policy_container = PolicyContainer.loads(policy_str)
 
-    click.echo(f"Uploiading the {policy_container.policy.name} policy to Falcon")
+    click.echo(f"Uploading the {policy_container.policy.name} policy to Falcon")
     policies_api.push_policy(policy_container.policy)
 
     click.echo("Done!")
