@@ -3,7 +3,7 @@
 This authentication backend can take public cloud API keys (US-1, US-2, EU-1), and will return
 an OAuth2 object suitable for authenticating with FalconPy.
 """
-from typing import Dict
+from typing import Dict, Optional
 
 import keyring
 
@@ -38,17 +38,7 @@ class PublicCloudSingleCIDBackend(AuthBackend):
         self.ssl_verify: bool = bool(config.get("ssl_verify", "False"))
         self.proxy: Dict[str, str] = config.get("proxy")
 
-        if config and self.client_id:
-            # We handle the case where the authentication backend has failed, so we
-            # have to get the client secret again. In this case, everything else is intact.
-            self.client_secret: str = keyring.get_password(
-                service_name=KEYRING_SERVICE_NAME,
-                username=self.client_id,
-            )
-            if not self.client_secret:
-                print("Client secret not available in the local secrets store. Please provide it.")
-                self.client_secret = fancy_input("Client Secret: ")
-        else:
+        if not config or not self.client_id:
             # If a config and Client ID are not available, we assume first time setup.
             self.client_id = fancy_input("Client ID: ")
             self.client_secret = fancy_input("Client Secret: ")
@@ -58,10 +48,29 @@ class PublicCloudSingleCIDBackend(AuthBackend):
             self.ssl_verify = advanced_options.ssl_verify
             self.proxy = advanced_options.proxy_config
 
+    @property
+    def client_secret(self) -> str:
+        """Loads the client secret dynamically from the system secret store.
+
+        This has been moved to a property to partially address GitHub Issue #25.
+        """
+        _client_secret: Optional[str] = keyring.get_password(
+            service_name=KEYRING_SERVICE_NAME,
+            username=self.client_id,
+        )
+        if not _client_secret:
+            print("Client secret not available in the local secrets store. Please provide it.")
+            _client_secret = fancy_input("Client Secret: ")
+            self.client_secret = _client_secret
+
+        return _client_secret
+
+    @client_secret.setter
+    def client_secret(self, _client_secret: str):
         keyring.set_password(
             service_name=KEYRING_SERVICE_NAME,
             username=self.client_id,
-            password=self.client_secret,
+            password=_client_secret,
         )
 
     def dump_config(self) -> Dict[str, object]:
