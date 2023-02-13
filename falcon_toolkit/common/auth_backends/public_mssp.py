@@ -78,7 +78,7 @@ class PublicCloudFlightControlParentCIDBackend(AuthBackend):
 
     @client_secret.setter
     def client_secret(self, _client_secret: str):
-        """Store the client secret to the system secrets store."""
+        """Store the client secret in the system secrets store."""
         keyring.set_password(
             service_name=KEYRING_SERVICE_NAME,
             username=self.client_id,
