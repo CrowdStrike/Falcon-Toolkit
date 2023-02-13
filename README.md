@@ -21,7 +21,9 @@ The toolkit provides:
 - Multiple profile support, including support for MSSP / Falcon Flight Control configurations.
 - A shell allowing you to interface with many hosts via RTR at once, and get the output via CSV.
 - Scriptability! You can program the shell by providing pre-written routines via a file on disk, and a full Python extensibility API is provided.
-- More functionality is coming soon! Already on the roadmap are Policy import/export and IOA import/export. Want more functionality? Open an [Issue](https://github.com/CrowdStrike/Falcon-Toolkit/issues/new)!
+- Prevention policy import and export
+- Response policy import and export
+- More functionality is coming soon! Want more functionality? Open an [Issue](https://github.com/CrowdStrike/Falcon-Toolkit/issues/new)!
 
 Since this is built on top of Caracara, you get a bunch of great functionality and flexibility free, including the ability to filter hosts using dynamically generated FQL queries, full debug logging where desired, Falcon Flight Control integration, and more! Plus, the tool is lightning quick as it leverages Caracara's parallelisation tricks to pull more information quickly.
 
@@ -180,13 +182,17 @@ Two types of configuration backends are provided out of the box: the default, wh
 
 Your API keys should have the following scopes enabled in the Falcon dashboard:
 
-| &darr; API Scopes // Commands &rarr; | `host_search` | `shell` |
-|--------------------------------------|:-------------:|:-------:|
-| **Falcon Flight Control: Read**      | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* |
-| **Hosts: Read**                      |       X       |    X    |
-| **Real Time Response: Read**         |               |    X    |
-| **Real Time Response: Write**        |               |    X    |
-| **Real Time Response: Admin**        |               |    X<br>*for admin commands*    |
+| &darr; API Scopes // Commands &rarr; | `host_search` | `shell` | `policies`<br>(Prevention) | `policies`<br>(Response)  |
+|--------------------------------------|:-------------:|:-------:|:--------------------------:|:-------------------------:|
+| **Falcon Flight Control: Read**      | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* |
+| **Hosts: Read**                      |       X       |    X    |                            |                           |
+| **Prevention Policies: Read**        |               |         | X<br>`describe` / `export` sub-commands |              |
+| **Prevention Policies: Write**       |               |         | X<br>`import` sub-command  |                           |
+| **Real Time Response: Read**         |               |    X    |                            |                           |
+| **Real Time Response: Write**        |               |    X    |                            |                           |
+| **Real Time Response: Admin**        |               |    X<br>*for admin commands*    |    |                           |
+| **Response Policies: Read**          |               |         |                            | X<br>`describe` / `export` sub-commands |
+| **Response Policies: Write**         |               |         |                            | X<br>`import` sub-command |
 
 ### Showing Your Profiles
 
@@ -289,7 +295,7 @@ falcon -p ProfileName shell -d abcdef12345,ghijkl67890
 
 Sometimes it is not practical to provide a list of Device IDs at the command line, often because the length of the string containing all the IDs would exceed the maximum command length allowable within your shell. To get around this, Falcon Toolkit provides another parameter (`--device-id-file` / `-df`), which allows you to provide a path to a file containing a list of AIDs, one per line. For example, let's say you wanted to connect to two devices with the AIDs `abcdef12345` and `ghijkl67890`, you may have a file named `device_ids.txt` with the following contents:
 
-```
+```text
 abcdef12345
 ghijkl67890
 ```
@@ -299,7 +305,6 @@ Then, you could jump into a shell with these devices via this Falcon Toolkit com
 ```shell
 falcon -p ProfileName shell -df device_ids.txt
 ```
-
 
 ### Real Time Response (RTR) Scripting
 
@@ -349,6 +354,48 @@ Some example usages of this functionality are as follows:
 - Execute `self.send_generic_command` directly, then use the returned `(stdout, stderr)` tuple to make decisions about which command to execute next (best suited to single system connections).
 
 </details>
+
+## Policy Manipulation
+
+You can `describe`, `import` and `export` two types of policies: Prevention and Response. The three verbs are applied to the `falcon policies` command to specify what you would like to do with policies, and a command line switch is used to specify the policy type to work with. Exported policies are written to disk as JSON with some Falcon Toolkit-specific data needed to import a policy back again.
+
+### Examples
+
+Show all Prevention policies within the `MyCompany` Falcon profile:
+
+```shell
+$ falcon -p MyCompany policies -p describe
+platform_default (Platform: Windows)
+    Platform default policy
+...
+```
+
+Show all Response policies when only one profile is configured:
+
+```shell
+$ falcon policies -r describe
+platform_default (Platform: Windows)
+    Platform default policy
+...
+```
+
+Export a Response policy from the `MyCompany` tenant to disk:
+
+```shell
+$ falcon -p MyCompany policies -r export
+Please choose a policy to export
+
+ * My Response Policy [Windows]
+   My Other Response Policy [Linux]
+...
+```
+
+Import a Prevention policy to the one configured Falcon tenant:
+
+```shell
+$ falcon policies -p import MyExportedPolicy.json
+...
+```
 
 ## Support & Community Forums
 
