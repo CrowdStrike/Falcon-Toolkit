@@ -65,7 +65,7 @@ def cli_policies(
         ctx.obj['policies_api'] = client.response_policies
         ctx.obj['policies_type'] = "response"
     else:
-        raise Exception("Impossible scenario: no policy type specified")
+        raise ValueError("Impossible scenario: no policy type specified")
 
 
 @click.command(
