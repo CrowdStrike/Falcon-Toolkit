@@ -134,7 +134,7 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
         click.echo(filters)
         logging.info(filters)
 
-        device_ids = client.hosts.get_device_ids(filters=filters)
+        device_ids = client.hosts.get_device_ids(filters=filters, online_state=True)
     elif device_id_list:
         click.echo(click.style(
             "Connecting to the device IDs provided on the command line",
@@ -149,7 +149,7 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
             if device_id:
                 device_ids.add(device_id)
 
-        device_ids = list(device_ids)
+        device_ids = client.hosts.filter_by_online_state(list(device_ids), online_state=True)
     elif device_id_file:
         click.echo(click.style(
             "Connecting to the device IDs listed in a file",
@@ -166,17 +166,17 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
                 line = line.strip()
                 if line:
                     device_ids.add(line)
-            device_ids = list(device_ids)
+            device_ids = client.hosts.filter_by_online_state(list(device_ids), online_state=True)
     else:
         click.echo(click.style(
-            "WARNING: Connecting to all hosts in the Falcon instance",
+            "WARNING: Connecting to all online hosts in the Falcon instance",
             fg='yellow',
         ))
-        logging.info("Connecting to all hosts in the Falcon instance")
-        device_ids = client.hosts.get_device_ids()
+        logging.info("Connecting to all online hosts in the Falcon instance")
+        device_ids = client.hosts.get_device_ids(online_state=True)
 
     if not device_ids:
-        click.echo(click.style("No devices match the provided filters", fg='red', bold=True))
+        click.echo(click.style("No online devices match the provided filters", fg='red', bold=True))
         sys.exit(1)
 
     device_count = len(device_ids)

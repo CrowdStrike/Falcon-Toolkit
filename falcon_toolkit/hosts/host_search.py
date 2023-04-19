@@ -16,6 +16,7 @@ from caracara.filters import FalconFilter
 def host_search_cmd(
     client: Client,
     filters: FalconFilter,
+    online_state: bool = None,
 ):
     """Search for hosts that match the provided filters."""
     click.echo(click.style("Searching for hosts...", fg='magenta'))
@@ -23,7 +24,7 @@ def host_search_cmd(
     fql = filters.get_fql()
 
     with click_spinner.spinner():
-        host_data = client.hosts.describe_devices(filters=fql)
+        host_data = client.hosts.describe_devices(filters=fql, online_state=online_state)
 
     logging.debug(host_data)
     for aid in host_data.keys():
