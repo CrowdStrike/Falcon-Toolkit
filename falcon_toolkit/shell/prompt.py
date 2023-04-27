@@ -856,7 +856,7 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.put_files, preserve_quotes=False)
     def do_put_files(self, args):
         """List the PUT files available in the Falcon instance."""
-        put_files = self.client.rtr.query_put_files()
+        put_files = self.client.rtr.describe_put_files()
         sorted_put_files = sorted(
             put_files.items(),
             key=lambda x: x[1]['name'],

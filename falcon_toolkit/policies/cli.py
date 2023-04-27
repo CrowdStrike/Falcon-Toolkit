@@ -19,7 +19,7 @@ from click_option_group import (
 )
 
 from falcon_toolkit.common.cli import get_instance
-from falcon_toolkit.policies.constants import PoliciesAPIModule
+from falcon_toolkit.policies.constants import PoliciesApiModule
 from falcon_toolkit.policies.describe import pretty_print_policies
 from falcon_toolkit.policies.container import PolicyContainer
 
@@ -75,7 +75,7 @@ def cli_policies(
 @click.pass_context
 def policies_describe(ctx: click.Context):
     """List and describe the Prevention or Response policies within the Falcon tenant."""
-    policies_api: PoliciesAPIModule = ctx.obj['policies_api']
+    policies_api: PoliciesApiModule = ctx.obj['policies_api']
     policies_type: str = ctx.obj['policies_type']
     click.echo(click.style(f"Describing all {policies_type} policies", fg='green', bold=True))
     policies = policies_api.describe_policies()
@@ -90,7 +90,7 @@ def policies_describe(ctx: click.Context):
 def policies_export(ctx: click.Context):
     """Allow a user to choose a Prevention or Response policy to export to disk."""
     # pylint: disable=too-many-locals
-    policies_api: PoliciesAPIModule = ctx.obj['policies_api']
+    policies_api: PoliciesApiModule = ctx.obj['policies_api']
     policies_type: str = ctx.obj['policies_type']
     click.echo("Loading policies...")
     policies = policies_api.describe_policies()
@@ -142,7 +142,7 @@ def policies_import(
     filename: str,
 ):
     """Import a Prevention or Response policy from the JSON file named FILENAME."""
-    policies_api: PoliciesAPIModule = ctx.obj['policies_api']
+    policies_api: PoliciesApiModule = ctx.obj['policies_api']
 
     click.echo(f"Loading policy in the file: {filename}")
 

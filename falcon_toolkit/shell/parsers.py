@@ -16,10 +16,6 @@ from falcon_toolkit.common.namespace import FalconRecursiveNamespace
 CLOUD_SCRIPT_CHOICES = []
 PUT_FILE_CHOICES = []
 
-# For all commands that take no arguments at all,
-# we can reuse this blank argparser to avoid instantiating
-# lots of empty/blank argparsers objects
-blank_argparser = Cmd2ArgumentParser()
 
 cat_argparser = Cmd2ArgumentParser()
 cat_argparser.add_argument(
@@ -671,8 +667,8 @@ _PARSERS = {
     "cd": cd_argparser,
     "cloud_scripts": cloud_scripts_argparser,
     "cp": cp_argparser,
-    "csrutil": blank_argparser,
-    "cswindiag": blank_argparser,
+    "csrutil": Cmd2ArgumentParser(),
+    "cswindiag": Cmd2ArgumentParser(),
     "download": download_argparser,
     "encrypt": encrypt_argparser,
     "env": env_argparser,
@@ -681,9 +677,9 @@ _PARSERS = {
     "filehash": filehash_argparser,
     "get": get_argparser,
     "get_status": get_status_argparser,
-    "getsid": blank_argparser,
-    "ifconfig": blank_argparser,
-    "ipconfig": blank_argparser,
+    "getsid": Cmd2ArgumentParser(),
+    "ifconfig": Cmd2ArgumentParser(),
+    "ipconfig": Cmd2ArgumentParser(),
     "kill": kill_argparser,
     "map": map_argparser,
     "memdump": memdump_argparser,
@@ -691,10 +687,10 @@ _PARSERS = {
     "mount": mount_argparser,
     "mv": mv_argparser,
     "netstat": netstat_argparser,
-    "ps": blank_argparser,
+    "ps": Cmd2ArgumentParser(),
     "put": put_argparser,
     "put_and_run": put_and_run_argparser,
-    "put_files": blank_argparser,
+    "put_files": Cmd2ArgumentParser(),
     "reg": reg_argparser,
     "restart": restart_argparser,
     "rm": rm_argparser,
