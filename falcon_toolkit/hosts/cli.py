@@ -8,12 +8,13 @@ from typing import List
 
 import click
 
+from caracara.common.constants import OnlineState
+
 from falcon_toolkit.common.cli import (
     get_instance,
     parse_cli_filters,
 )
 from falcon_toolkit.hosts.host_search import host_search_cmd
-from caracara.common.constants import OnlineState
 
 
 @click.command(
@@ -37,7 +38,7 @@ from caracara.common.constants import OnlineState
     type=click.Choice(OnlineState.VALUES),
     multiple=False,
     required=False,
-    help=f"Filter hosts by online state"
+    help="Filter hosts by online state"
 )
 def cli_host_search(
     ctx: click.Context,

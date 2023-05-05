@@ -122,7 +122,9 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
     """
     instance = get_instance(ctx)
     client = instance.auth_backend.authenticate()
-    online_state = None if queueing else OnlineState.ONLINE  # Show online hosts only if queueing is false
+
+    # Show online hosts only if queueing is false
+    online_state = None if queueing else OnlineState.ONLINE
 
     if filter_kv_strings:
         click.echo(click.style(
@@ -152,7 +154,10 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
             if device_id:
                 device_ids.add(device_id)
 
-        device_ids = client.hosts.filter_by_online_state(list(device_ids), online_state=online_state)
+        device_ids = client.hosts.filter_by_online_state(
+            list(device_ids),
+            online_state=online_state
+        )
     elif device_id_file:
         click.echo(click.style(
             "Connecting to the device IDs listed in a file",
@@ -169,7 +174,10 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
                 line = line.strip()
                 if line:
                     device_ids.add(line)
-            device_ids = client.hosts.filter_by_online_state(list(device_ids), online_state=online_state)
+            device_ids = client.hosts.filter_by_online_state(
+                list(device_ids),
+                online_state=online_state
+            )
     else:
         click.echo(click.style(
             "WARNING: Connecting to all online hosts in the Falcon instance",

@@ -6,10 +6,10 @@ launch a batch RTR shell with these systems.
 """
 import logging
 
+from typing import Optional
+
 import click
 import click_spinner
-
-from typing import Optional
 
 from caracara import Client
 from caracara.filters import FalconFilter
