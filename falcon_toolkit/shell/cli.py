@@ -184,11 +184,13 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
             f"WARNING: Connecting to all {online_string}hosts in the Falcon instance",
             fg='yellow',
         ))
-        logging.info(f"Connecting to all {online_string}hosts in the Falcon instance")
+        logging.info("Connecting to all %shosts in the Falcon instance" %{online_string})
         device_ids = client.hosts.get_device_ids(online_state=online_state)
 
     if not device_ids:
-        click.echo(click.style(f"No {online_string}devices match the provided filters", fg='red', bold=True))
+        click.echo(click.style(
+            f"No {online_string}devices match the provided filters", fg='red', bold=True
+        ))
         sys.exit(1)
 
     device_count = len(device_ids)
