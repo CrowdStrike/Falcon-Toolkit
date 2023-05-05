@@ -125,6 +125,7 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
 
     # Show online hosts only if queueing is false
     online_state = None if queueing else OnlineState.ONLINE
+    online_string = "" if queueing else "online "
 
     if filter_kv_strings:
         click.echo(click.style(
@@ -180,14 +181,14 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
             )
     else:
         click.echo(click.style(
-            "WARNING: Connecting to all online hosts in the Falcon instance",
+            f"WARNING: Connecting to all {online_string}hosts in the Falcon instance",
             fg='yellow',
         ))
-        logging.info("Connecting to all online hosts in the Falcon instance")
+        logging.info(f"Connecting to all {online_string}hosts in the Falcon instance")
         device_ids = client.hosts.get_device_ids(online_state=online_state)
 
     if not device_ids:
-        click.echo(click.style("No online devices match the provided filters", fg='red', bold=True))
+        click.echo(click.style(f"No {online_string}devices match the provided filters", fg='red', bold=True))
         sys.exit(1)
 
     device_count = len(device_ids)
