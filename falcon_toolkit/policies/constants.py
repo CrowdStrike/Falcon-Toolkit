@@ -29,7 +29,7 @@ POLICY_TYPES = [
 
 # Union type of all types of all Caracara modules providing policy data
 # They all expose a common API, so can be assumed to be one type where convenient
-PoliciesAPIModule = Union[
+PoliciesApiModule = Union[
     PreventionPoliciesApiModule,
     ResponsePoliciesApiModule,
 ]
