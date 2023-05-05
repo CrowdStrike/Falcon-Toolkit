@@ -9,6 +9,8 @@ import logging
 import click
 import click_spinner
 
+from typing import Optional
+
 from caracara import Client
 from caracara.filters import FalconFilter
 
@@ -16,7 +18,7 @@ from caracara.filters import FalconFilter
 def host_search_cmd(
     client: Client,
     filters: FalconFilter,
-    online_state: bool = None,
+    online_state: Optional[str],
 ):
     """Search for hosts that match the provided filters."""
     click.echo(click.style("Searching for hosts...", fg='magenta'))
