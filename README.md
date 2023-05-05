@@ -233,22 +233,22 @@ Before jumping into an RTR shell, you may wish to see which hosts you would conn
 
 As with the `shell` command, you must specify a profile (the name of a configuration you created using the `new` command above) if you have created more than one, and you can then optionally provide as many filters as you want using succesive `-f` switches. Some examples:
 
-List all Windows hosts that are not within the `London` site, within the one Falcon instance configured earlier.
+List all online Windows hosts that are not within the `London` site, within the one Falcon instance configured earlier.
 
 ```shell
-falcon host_search -f OS=Windows -f Site__NOT=London
+falcon host_search -f OS=Windows -f Site__NOT=London -o online
 ```
 
-List all Windows hosts not within the `075e03f5e5c04d83b4831374e7dc01c3` Group, wihtin the `MyCompany` Falcon tenant.
+List all Windows hosts not within the `075e03f5e5c04d83b4831374e7dc01c3` Group, within the `MyCompany` Falcon tenant.
 
 ```shell
 falcon -p MyCompany host_search -f OS=Windows -f GroupID__NOT=075e03f5e5c04d83b4831374e7dc01c3
 ```
 
-List all `MyOtherCompany` Windows servers or domain controllers not within an OU called `Protected`
+List all offline `MyOtherCompany` Windows servers or domain controllers not within an OU called `Protected`
 
 ```shell
-falcon -p MyOtherCompany host_search -f OS=Windows -f Role=Server,DC -f OU__NOT=Protected
+falcon -p MyOtherCompany host_search -f OS=Windows -f Role=Server,DC -f OU__NOT=Protected -o offline
 ```
 
 List all `MyOtherCompany` Windows Workstations that have checked in to Falcon within the past 30 minutes

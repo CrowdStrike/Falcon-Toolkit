@@ -16,6 +16,8 @@ from click_option_group import (
     MutuallyExclusiveOptionGroup,
 )
 
+from caracara.common.constants import OnlineState
+
 from falcon_toolkit.common.cli import (
     get_instance,
     parse_cli_filters,
@@ -121,6 +123,10 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
     instance = get_instance(ctx)
     client = instance.auth_backend.authenticate()
 
+    # Show online hosts only if queueing is false
+    online_state = None if queueing else OnlineState.ONLINE
+    online_string = "" if queueing else "online "
+
     if filter_kv_strings:
         click.echo(click.style(
             "Connecting to all hosts that match the provided Falcon filters",
@@ -134,7 +140,7 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
         click.echo(filters)
         logging.info(filters)
 
-        device_ids = client.hosts.get_device_ids(filters=filters)
+        device_ids = client.hosts.get_device_ids(filters=filters, online_state=online_state)
     elif device_id_list:
         click.echo(click.style(
             "Connecting to the device IDs provided on the command line",
@@ -149,7 +155,10 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
             if device_id:
                 device_ids.add(device_id)
 
-        device_ids = list(device_ids)
+        device_ids = client.hosts.filter_by_online_state(
+            list(device_ids),
+            online_state=online_state,
+        )
     elif device_id_file:
         click.echo(click.style(
             "Connecting to the device IDs listed in a file",
@@ -166,17 +175,24 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
                 line = line.strip()
                 if line:
                     device_ids.add(line)
-            device_ids = list(device_ids)
+            device_ids = client.hosts.filter_by_online_state(
+                list(device_ids),
+                online_state=online_state,
+            )
     else:
         click.echo(click.style(
-            "WARNING: Connecting to all hosts in the Falcon instance",
+            f"WARNING: Connecting to all {online_string}hosts in the Falcon instance",
             fg='yellow',
         ))
-        logging.info("Connecting to all hosts in the Falcon instance")
-        device_ids = client.hosts.get_device_ids()
+        logging.info("Connecting to all %shosts in the Falcon instance", online_string)
+        device_ids = client.hosts.get_device_ids(online_state=online_state)
 
     if not device_ids:
-        click.echo(click.style("No devices match the provided filters", fg='red', bold=True))
+        click.echo(click.style(
+            f"No {online_string}devices match the provided filters",
+            fg='red',
+            bold=True,
+        ))
         sys.exit(1)
 
     device_count = len(device_ids)
