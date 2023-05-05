@@ -38,7 +38,7 @@ from falcon_toolkit.hosts.host_search import host_search_cmd
     type=click.Choice(OnlineState.VALUES),
     multiple=False,
     required=False,
-    help="Filter hosts by online state"
+    help="Filter hosts by online state",
 )
 def cli_host_search(
     ctx: click.Context,
