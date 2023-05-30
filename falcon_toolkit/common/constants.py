@@ -1,10 +1,18 @@
 """Falcon Toolkit: Common Constants."""
+import os
+
+import platformdirs
+
 # Authentication
 KEYRING_SERVICE_NAME = "FalconToolkit"
 
 # Configuration
 CONFIG_FILENAME = "FalconToolkit.json"
-DEFAULT_CONFIG_DIR = "~/FalconToolkit"
+DEFAULT_CONFIG_DIR = platformdirs.user_data_dir(
+    appname="FalconToolkit",
+    appauthor="CrowdStrike",
+)
+OLD_DEFAULT_CONFIG_DIR = os.path.expanduser("~/FalconToolkit")
 
 # Logging
 LOG_CONSOLE_FORMATTER = "%(message)s"
