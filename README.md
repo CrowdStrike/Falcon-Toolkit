@@ -4,7 +4,7 @@
 ![CrowdStrike Falcon](https://raw.githubusercontent.com/CrowdStrike/falconpy/main/docs/asset/cs-logo.png)
 
 [![Twitter URL](https://img.shields.io/twitter/url?label=Follow%20%40CrowdStrike&style=social&url=https%3A%2F%2Ftwitter.com%2FCrowdStrike)](https://twitter.com/CrowdStrike)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/CrowdStrike/Falcon-Toolkit/Publish%20Python%20Package?label=build%20and%20deploy)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/CrowdStrike/Falcon-Toolkit/release-deploy.yml?label=build%20and%20deploy)
 [![PyPI](https://img.shields.io/pypi/v/Falcon-Toolkit)](https://pypi.org/project/Falcon-Toolkit)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Falcon-Toolkit)
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/CrowdStrike/Falcon-Toolkit)
