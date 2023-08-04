@@ -27,6 +27,7 @@ the following steps:
 """
 import logging
 import os
+import shutil
 import sys
 
 import click
@@ -40,12 +41,13 @@ from colorama import (
 )
 
 from falcon_toolkit.common.config import FalconToolkitConfig
+from falcon_toolkit.common.console_utils import build_file_hyperlink
 from falcon_toolkit.common.constants import (
+    CONFIG_FILENAME,
     DEFAULT_CONFIG_DIR,
     LOG_SUB_DIR,
     OLD_DEFAULT_CONFIG_DIR,
 )
-from falcon_toolkit.common.console_utils import build_file_hyperlink
 from falcon_toolkit.common.logging_config import configure_logger
 from falcon_toolkit.common.utils import configure_data_dir
 from falcon_toolkit.hosts.cli import cli_host_search
@@ -149,6 +151,14 @@ def cli(
                     "LEAVE_ALONE",
                 ),
                 pick.Option(
+                    (
+                        f"Leave my old folder ({OLD_DEFAULT_CONFIG_DIR}) alone, "
+                        f"create a new one at {config_path}, and copy my configuration "
+                        "file there."
+                    ),
+                    "COPY_CONFIG_ONLY",
+                ),
+                pick.Option(
                     "Exit Falcon Toolkit and do nothing",
                     "ABORT",
                 ),
@@ -166,6 +176,16 @@ def cli(
             click.echo(
                 f"Creating a new, empty data directory at {config_path} "
                 "and leaving the original folder alone"
+            )
+        elif choice.value == "COPY_CONFIG_ONLY":
+            click.echo(
+                f"Creating a new, empty data directory at {config_path} "
+                "and copying the current configuration there"
+            )
+            os.mkdir(config_path)
+            shutil.copyfile(
+                os.path.join(OLD_DEFAULT_CONFIG_DIR, CONFIG_FILENAME),
+                os.path.join(config_path, CONFIG_FILENAME),
             )
         else:
             sys.exit(1)
