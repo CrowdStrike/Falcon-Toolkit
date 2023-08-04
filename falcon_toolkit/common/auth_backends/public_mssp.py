@@ -34,6 +34,8 @@ class PublicCloudFlightControlParentCIDBackend(AuthBackend):
         "party. This option is compatible with all of CrowdStrike's public cloud environments. "
         "For EU-1, US-1 and US-2, only a Client ID and Client Secret are required. For US "
         "GovCloud, set the Cloud Name to usgov1 within the additional options. "
+        "This option should be used only when you are connecting to a Parent CID; if you only have "
+        "keys for a child CID, use the Single CID authentication backend instead. "
         "NOTE: Each time you connect to a Flight Control CID you will be prompted on screen to "
         "choose a child CID to connect to. To skip this, set the environment variable "
         "FALCON_MSSP_CHILD_CID to the CID you want to connect to."
