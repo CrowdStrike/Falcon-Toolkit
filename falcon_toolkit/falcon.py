@@ -27,8 +27,11 @@ the following steps:
 """
 import logging
 import os
+import shutil
+import sys
 
 import click
+import pick
 
 from caracara.filters.fql import FalconFilterAttribute
 from caracara.modules.hosts import FILTER_ATTRIBUTES as HOSTS_FILTER_ATTRIBUTES
@@ -38,11 +41,13 @@ from colorama import (
 )
 
 from falcon_toolkit.common.config import FalconToolkitConfig
+from falcon_toolkit.common.console_utils import build_file_hyperlink
 from falcon_toolkit.common.constants import (
+    CONFIG_FILENAME,
     DEFAULT_CONFIG_DIR,
     LOG_SUB_DIR,
+    OLD_DEFAULT_CONFIG_DIR,
 )
-from falcon_toolkit.common.console_utils import build_file_hyperlink
 from falcon_toolkit.common.logging_config import configure_logger
 from falcon_toolkit.common.utils import configure_data_dir
 from falcon_toolkit.hosts.cli import cli_host_search
@@ -58,7 +63,7 @@ from falcon_toolkit.shell.cli import cli_shell
     envvar='FALCON_TOOLKIT_CONFIG_DIR',
     type=click.STRING,
     default=DEFAULT_CONFIG_DIR,
-    help="Path to the configuration directory (default: ~/.FalconToolkit/)",
+    help="Path to the configuration directory (default: %userappdata%/FalconToolkit/)",
 )
 @click.option(
     '-v',
@@ -118,13 +123,72 @@ def cli(
     # Configure context that can be passed down to other options
     ctx.ensure_object(dict)
     click.echo(click.style("Falcon Toolkit", fg='blue', bold=True))
-    config_path = os.path.expanduser(config_path)
     hyperlink = build_file_hyperlink(config_path, config_path, "falcon_config_path")
     click.echo(click.style(f"Configuration Directory: {hyperlink}", fg='black'))
     if verbose:
         log_level = logging.INFO
     else:
         log_level = logging.CRITICAL
+
+    if (
+        config_path == DEFAULT_CONFIG_DIR and
+        os.path.exists(OLD_DEFAULT_CONFIG_DIR) and
+        not os.path.exists(config_path)
+    ):
+        # The user has used Falcon Toolkit before, and uses the default directory, so we
+        # offer to move the configuration folder for them.
+        choice, _ = pick.pick(
+            options=[
+                pick.Option(
+                    f"Please move my current folder contents to {config_path}",
+                    "MOVE_FOLDER",
+                ),
+                pick.Option(
+                    (
+                        f"Leave my old folder ({OLD_DEFAULT_CONFIG_DIR}) alone "
+                        f"and create a new one at {config_path}"
+                    ),
+                    "LEAVE_ALONE",
+                ),
+                pick.Option(
+                    (
+                        f"Leave my old folder ({OLD_DEFAULT_CONFIG_DIR}) alone, "
+                        f"create a new one at {config_path}, and copy my configuration "
+                        "file there."
+                    ),
+                    "COPY_CONFIG_ONLY",
+                ),
+                pick.Option(
+                    "Exit Falcon Toolkit and do nothing",
+                    "ABORT",
+                ),
+            ],
+            title=(
+                "As of Falcon Toolkit 3.3.0, the configuration directory has moved to a "
+                "platform-specific data configuration directory."
+            )
+        )
+
+        if choice.value == "MOVE_FOLDER":
+            click.echo(f"Moving {OLD_DEFAULT_CONFIG_DIR} to {config_path}")
+            os.rename(OLD_DEFAULT_CONFIG_DIR, config_path)
+        elif choice.value == "LEAVE_ALONE":
+            click.echo(
+                f"Creating a new, empty data directory at {config_path} "
+                "and leaving the original folder alone"
+            )
+        elif choice.value == "COPY_CONFIG_ONLY":
+            click.echo(
+                f"Creating a new, empty data directory at {config_path} "
+                "and copying the current configuration there"
+            )
+            os.mkdir(config_path)
+            shutil.copyfile(
+                os.path.join(OLD_DEFAULT_CONFIG_DIR, CONFIG_FILENAME),
+                os.path.join(config_path, CONFIG_FILENAME),
+            )
+        else:
+            sys.exit(1)
 
     # Configure and load the configuration object
     configure_data_dir(config_path)
