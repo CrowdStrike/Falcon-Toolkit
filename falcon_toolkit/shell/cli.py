@@ -155,7 +155,7 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
             if device_id:
                 device_ids.add(device_id)
 
-        device_ids = client.hosts.filter_by_online_state(
+        device_ids = client.hosts.filter_device_ids_by_online_state(
             list(device_ids),
             online_state=online_state,
         )
@@ -175,7 +175,7 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
                 line = line.strip()
                 if line:
                     device_ids.add(line)
-            device_ids = client.hosts.filter_by_online_state(
+            device_ids = client.hosts.filter_device_ids_by_online_state(
                 list(device_ids),
                 online_state=online_state,
             )
