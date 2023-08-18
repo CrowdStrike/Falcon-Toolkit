@@ -182,7 +182,7 @@ def cli(
                 f"Creating a new, empty data directory at {config_path} "
                 "and copying the current configuration there"
             )
-            os.mkdir(config_path)
+            os.makedirs(config_path)
             shutil.copyfile(
                 os.path.join(OLD_DEFAULT_CONFIG_DIR, CONFIG_FILENAME),
                 os.path.join(config_path, CONFIG_FILENAME),

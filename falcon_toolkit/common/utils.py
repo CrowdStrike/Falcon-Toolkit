@@ -44,11 +44,11 @@ def configure_data_dir(config_dir: str):
         if not os.path.isdir(config_dir):
             raise ValueError("Specified configuration directory path is already a file")
     else:
-        os.mkdir(config_dir)
+        os.makedirs(config_dir)
 
     logs_path = os.path.join(config_dir, LOG_SUB_DIR)
     if not os.path.exists(logs_path):
-        os.mkdir(logs_path)
+        os.makedirs(logs_path)
 
 
 def filename_safe_string(unsafe_string: str) -> str:
