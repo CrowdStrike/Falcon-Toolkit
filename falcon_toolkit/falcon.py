@@ -290,6 +290,7 @@ def cli_list_filters():
         click.echo(host_filters[unique_filter_name]['help'])
         click.echo()
 
+
 # Load all commands into the main cli object, ready for use as root falcon commands
 cli.add_command(cli_host_search)
 cli.add_command(cli_list_filters)
