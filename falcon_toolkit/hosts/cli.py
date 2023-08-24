@@ -40,14 +40,23 @@ from falcon_toolkit.hosts.host_search import host_search_cmd
     required=False,
     help="Filter hosts by online state",
 )
+@click.option(
+    '-e',
+    '--export',
+    required=False,
+    multiple=False,
+    type=click.STRING,
+    help='Path to export CSV of host_search results'
+)
 def cli_host_search(
     ctx: click.Context,
     filter_kv_strings: List[str],
     online_state: str = None,
+    export: str = None
 ):
     """Implement the host_search CLI command."""
     instance = get_instance(ctx)
     client = instance.auth_backend.authenticate()
     filters = parse_cli_filters(filter_kv_strings, client)
 
-    host_search_cmd(client, filters, online_state)
+    host_search_cmd(client, filters, online_state, export)
