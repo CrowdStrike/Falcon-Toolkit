@@ -4,11 +4,13 @@ This functionality allows users to search for hosts without connecting to them.
 Once a set of filters has been decided upon, swapping 'host_search' for 'shell' at the CLI will
 launch a batch RTR shell with these systems.
 """
+import csv
 import logging
-from operator import itemgetter
+import os
 
+from operator import itemgetter
 from textwrap import TextWrapper
-from typing import List, Optional
+from typing import Dict, List, Optional, Union
 
 import click
 import click_spinner
@@ -36,21 +38,49 @@ def vertically_align_middle(row_data: List[str]):
             row_data[i] = '\0' + '\n' * align_line_breaks + cell
 
 
-def host_search_cmd(
-    client: Client,
-    filters: FalconFilter,
-    online_state: Optional[str],
-):
-    """Search for hosts that match the provided filters."""
-    click.echo(click.style("Searching for hosts...", fg='magenta'))
+def _host_search_export(export_path: str, host_data: Dict[str, Union[str, Dict]]) -> None:
+    """Export a list of hosts to a CSV at a user-defined path."""
+    fieldnames = [
+        "aid",
+        "hostname",
+        "last_seen",
+        "local_ip",
+        "os_version",
+        "machine_domain",
+        "containment_status",
+        "grouping_tags"
+    ]
 
-    fql = filters.get_fql()
+    with open(export_path, 'w', newline='', encoding='utf-8') as csv_file_handle:
+        csv_writer = csv.DictWriter(
+            csv_file_handle,
+            fieldnames=fieldnames
+        )
 
-    with click_spinner.spinner():
-        host_data = client.hosts.describe_devices(filters=fql, online_state=online_state)
+        csv_writer.writeheader()
 
-    logging.debug(host_data)
+        for aid in host_data.keys():
+            row_data = {
+                "aid": aid,
+                "hostname": host_data[aid].get("hostname", "<NO HOSTNAME>"),
+                "last_seen": host_data[aid].get('last_seen', ''),
+                "local_ip": host_data[aid].get('local_ip', ''),
+                "os_version": host_data[aid].get('os_version', ''),
+                "machine_domain": host_data[aid].get('machine_domain', ''),
+                "containment_status": host_data[aid].get('status', 'normal'),
+                "grouping_tags": ';'.join(host_data[aid].get("tags", "")),
+            }
 
+            csv_writer.writerow(row_data)
+
+        click.echo(click.style(
+            f"Successfully exported host data for {len(host_data)} hosts to {export_path}",
+            fg='green')
+        )
+
+
+def _host_search_print(host_data: Dict[str, Union[str, Dict]]) -> None:
+    """Pretty print a list of hosts to screen in a tabular format."""
     header_row = [
         click.style("Device ID", bold=True, fg='blue'),
         click.style("Hostname", bold=True, fg='blue'),
@@ -109,3 +139,41 @@ def host_search_cmd(
         table_rows,
         tablefmt='fancy_grid',
     ))
+
+
+def host_search_cmd(
+    client: Client,
+    filters: FalconFilter,
+    online_state: Optional[str],
+    export: Optional[str]
+):
+    """Search for hosts that match the provided filters."""
+    click.echo(click.style("Searching for hosts...", fg='magenta'))
+
+    fql = filters.get_fql()
+
+    with click_spinner.spinner():
+        host_data = client.hosts.describe_devices(filters=fql, online_state=online_state)
+
+    logging.debug(host_data)
+
+    if export is None:
+        _host_search_print(host_data)
+    else:
+        if not export.endswith(".csv"):
+            click.echo(click.style(
+                f"{export} does not end in .csv. Please specify a filename ending in .csv.",
+                fg='red'
+            ))
+            return
+
+        export_dirname = os.path.dirname(export)
+        if not os.path.isdir(export_dirname):
+            click.echo(click.style(
+                f"The directory {export_dirname} it not a valid directory. "
+                "Please create this directory before exporting host data to it.",
+                fg='red'
+            ))
+            return
+
+        _host_search_export(export_path=export, host_data=host_data)
