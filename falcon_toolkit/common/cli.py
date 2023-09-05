@@ -39,7 +39,7 @@ def get_instance(ctx: click.Context):
 
 def parse_cli_filters(filter_kv_strings: List[str], client: Client) -> FalconFilter:
     """Parse consecutive chains of -f filters into a FalconFilter object for later use."""
-    filters = client.FalconFilter()
+    filters = client.FalconFilter(dialect='hosts')
     for filter_kv_string in filter_kv_strings:
         if '=' not in filter_kv_string:
             raise ValueError("Filter key=value string is in the wrong format")
