@@ -33,8 +33,7 @@ import sys
 import click
 import pick
 
-from caracara.filters.fql import FalconFilterAttribute
-from caracara.modules.hosts import FILTER_ATTRIBUTES as HOSTS_FILTER_ATTRIBUTES
+from caracara_filters.dialects import DIALECTS
 from colorama import (
     deinit as colorama_deinit,
     init as colorama_init,
@@ -277,12 +276,18 @@ def profiles_new(ctx: click.Context):
 )
 def cli_list_filters():
     """List all possible filters out on screen based on data available within Caracara."""
-    for hosts_filter_attribute in HOSTS_FILTER_ATTRIBUTES:
-        hosts_filter_attribute_obj: FalconFilterAttribute = hosts_filter_attribute()
-        click.echo(click.style(hosts_filter_attribute_obj.name, fg='blue', bold=True))
-        click.echo(click.style(hosts_filter_attribute_obj.description, dim=True))
-        click.echo(hosts_filter_attribute_obj.example())
+    host_filters: dict = DIALECTS['hosts']
 
+    # We have some duplicate filters with an underscore added for FQL compatability
+    unique_filters = set()
+    for key in host_filters:
+        unique_filters.add(key.replace("_", ""))
+
+    unique_filters = sorted(list(unique_filters))
+
+    for unique_filter_name in unique_filters:
+        click.echo(click.style(unique_filter_name, fg='blue', bold=True))
+        click.echo(host_filters[unique_filter_name]['help'])
         click.echo()
 
 
