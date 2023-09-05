@@ -6,7 +6,6 @@ launch a batch RTR shell with these systems.
 """
 import csv
 import logging
-import os
 
 from operator import itemgetter
 from textwrap import TextWrapper
@@ -160,20 +159,4 @@ def host_search_cmd(
     if export is None:
         _host_search_print(host_data)
     else:
-        if not export.endswith(".csv"):
-            click.echo(click.style(
-                f"{export} does not end in .csv. Please specify a filename ending in .csv.",
-                fg='red'
-            ))
-            return
-
-        export_dirname = os.path.dirname(export)
-        if not os.path.isdir(export_dirname):
-            click.echo(click.style(
-                f"The directory {export_dirname} it not a valid directory. "
-                "Please create this directory before exporting host data to it.",
-                fg='red'
-            ))
-            return
-
         _host_search_export(export_path=export, host_data=host_data)

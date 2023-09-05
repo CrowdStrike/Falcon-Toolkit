@@ -3,6 +3,7 @@
 This file contains the command line interface for the host_search command. The implementation
 of the logic itself is contained in host_search.py
 """
+import os
 
 from typing import List
 
@@ -23,6 +24,14 @@ from falcon_toolkit.hosts.host_search import host_search_cmd
 )
 @click.pass_context
 @click.option(
+    '-e',
+    '--export',
+    required=False,
+    multiple=False,
+    type=click.STRING,
+    help='Export data to CSV, rather than output to screen, by providing a path to this parameter',
+)
+@click.option(
     '-f',
     '--filter',
     'filter_kv_strings',
@@ -40,14 +49,6 @@ from falcon_toolkit.hosts.host_search import host_search_cmd
     required=False,
     help="Filter hosts by online state",
 )
-@click.option(
-    '-e',
-    '--export',
-    required=False,
-    multiple=False,
-    type=click.STRING,
-    help='Path to export CSV of host_search results'
-)
 def cli_host_search(
     ctx: click.Context,
     filter_kv_strings: List[str],
@@ -58,5 +59,25 @@ def cli_host_search(
     instance = get_instance(ctx)
     client = instance.auth_backend.authenticate()
     filters = parse_cli_filters(filter_kv_strings, client)
+
+    # Handle validation of the CSV export path here, before the search executes in host_search_cmd.
+    # We only care here if the export parameter is not None; if it is None, we'll print the output
+    # to screen.
+    if export is not None:
+        if not export.endswith(".csv"):
+            click.echo(click.style(
+                f"{export} does not end in .csv. Please specify a filename ending in .csv.",
+                fg='red'
+            ))
+            return
+
+        export_dirname = os.path.dirname(os.path.abspath(export))
+        if not os.path.isdir(export_dirname):
+            click.echo(click.style(
+                f"The directory {export_dirname} it not a valid directory. "
+                "Please create this directory before exporting host data to it.",
+                fg='red'
+            ))
+            return
 
     host_search_cmd(client, filters, online_state, export)
