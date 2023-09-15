@@ -42,11 +42,12 @@ def _host_search_export(export_path: str, host_data: Dict[str, Union[str, Dict]]
     fieldnames = [
         "aid",
         "hostname",
-        "last_seen",
+        "machine_domain",
         "local_ip",
         "os_version",
-        "machine_domain",
+        "role",
         "containment_status",
+        "last_seen",
         "grouping_tags"
     ]
 
@@ -62,11 +63,12 @@ def _host_search_export(export_path: str, host_data: Dict[str, Union[str, Dict]]
             row_data = {
                 "aid": aid,
                 "hostname": host_data[aid].get("hostname", "<NO HOSTNAME>"),
-                "last_seen": host_data[aid].get('last_seen', ''),
+                "machine_domain": host_data[aid].get('machine_domain', ''),
                 "local_ip": host_data[aid].get('local_ip', ''),
                 "os_version": host_data[aid].get('os_version', ''),
-                "machine_domain": host_data[aid].get('machine_domain', ''),
+                "role": host_data[aid].get("product_type_desc", ''),
                 "containment_status": host_data[aid].get('status', 'normal'),
+                "last_seen": host_data[aid].get('last_seen', ''),
                 "grouping_tags": ';'.join(host_data[aid].get("tags", "")),
             }
 
@@ -83,11 +85,12 @@ def _host_search_print(host_data: Dict[str, Union[str, Dict]]) -> None:
     header_row = [
         click.style("Device ID", bold=True, fg='blue'),
         click.style("Hostname", bold=True, fg='blue'),
-        click.style("Last Seen", bold=True, fg='blue'),
+        click.style("Domain", bold=True, fg='blue'),
         click.style("Local IP Address", bold=True, fg='blue'),
         click.style("OS Version", bold=True, fg='blue'),
-        click.style("Domain", bold=True, fg='blue'),
+        click.style("System Role", bold=True, fg='blue'),
         click.style("Containment", bold=True, fg='blue'),
+        click.style("Last Seen", bold=True, fg='blue'),
         click.style("Grouping Tags", bold=True, fg='blue'),
     ]
     table_rows = []
@@ -118,11 +121,12 @@ def _host_search_print(host_data: Dict[str, Union[str, Dict]]) -> None:
         row = [
             click.style(aid, fg='red'),
             click.style(hostname, bold=True),
-            host_data[aid].get('last_seen', '').replace('T', '\n').replace('Z', ''),
+            '\n'.join(sixteen_wrap.wrap(host_data[aid].get('machine_domain', ''))),
             host_data[aid].get('local_ip', ''),
             '\n'.join(sixteen_wrap.wrap(host_data[aid].get('os_version', ''))),
-            '\n'.join(sixteen_wrap.wrap(host_data[aid].get('machine_domain', ''))),
+            '\n'.join(sixteen_wrap.wrap(host_data[aid].get('product_type_desc', ''))),
             containment_str,
+            host_data[aid].get('last_seen', '').replace('T', '\n').replace('Z', ''),
             grouping_tags,
         ]
         table_rows.append(row)
