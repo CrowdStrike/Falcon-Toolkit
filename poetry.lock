@@ -165,13 +165,13 @@ cffi = ">=1.0.0"
 
 [[package]]
 name = "caracara"
-version = "0.5.2"
+version = "0.5.3"
 description = "The CrowdStrike Falcon Developer Toolkit"
 optional = false
 python-versions = ">=3.7.2,<4.0.0"
 files = [
-    {file = "caracara-0.5.2-py3-none-any.whl", hash = "sha256:1eb35861865da293f0bd13d2732fb88aaf7745e57efcb1b7e6bc5ad2c0e93b85"},
-    {file = "caracara-0.5.2.tar.gz", hash = "sha256:c9df9649ec720a71abc21c36ea4d67fff1c24a492e77e082eff5b30341736c5e"},
+    {file = "caracara-0.5.3-py3-none-any.whl", hash = "sha256:5086bd7903718cd49e41d105a596743e64b16cd38254cf719bb3bc850c629bb6"},
+    {file = "caracara-0.5.3.tar.gz", hash = "sha256:c638fdf3dba7678d010929109c46ebd25d0ff4fc39709c3b93439f656a0924bd"},
 ]
 
 [package.dependencies]
