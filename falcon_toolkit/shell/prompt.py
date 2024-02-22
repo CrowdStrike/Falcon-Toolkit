@@ -820,6 +820,11 @@ class RTRPrompt(Cmd):
         command = f'mkdir {args.directory}'
         self.send_generic_command(command)
 
+    @with_argparser(PARSERS.mount, preserve_quotes=True)
+    def do_mount(self, args):
+        """List mount points on a system."""
+        self.send_generic_command("mount")
+
     @with_argparser(PARSERS.mv, preserve_quotes=True)
     def do_mv(self, args):
         """Move a file or directory."""
