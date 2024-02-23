@@ -15,7 +15,7 @@ jobs:
   codequality:
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
@@ -26,6 +26,8 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'poetry'
+    - name: Install setuptools
+      run: pip install -U setuptools
     - name: Install dependencies
       run: poetry install
     - name: Lint package source with flake8
