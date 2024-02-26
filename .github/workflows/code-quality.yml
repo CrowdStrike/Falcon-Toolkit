@@ -26,8 +26,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'poetry'
-    - name: Install setuptools
-      run: pip install -U setuptools
     - name: Install dependencies
       run: poetry install
     - name: Lint package source with flake8
