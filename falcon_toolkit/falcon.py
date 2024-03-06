@@ -31,8 +31,8 @@ import shutil
 import sys
 
 import click
-import pick
 
+from caracara.common.csdialog import csradiolist_dialog
 from caracara_filters.dialects import DIALECTS
 from colorama import (
     deinit as colorama_deinit,
@@ -136,47 +136,45 @@ def cli(
     ):
         # The user has used Falcon Toolkit before, and uses the default directory, so we
         # offer to move the configuration folder for them.
-        choice, _ = pick.pick(
-            options=[
-                pick.Option(
-                    f"Please move my current folder contents to {config_path}",
-                    "MOVE_FOLDER",
-                ),
-                pick.Option(
-                    (
-                        f"Leave my old folder ({OLD_DEFAULT_CONFIG_DIR}) alone "
-                        f"and create a new one at {config_path}"
-                    ),
-                    "LEAVE_ALONE",
-                ),
-                pick.Option(
-                    (
-                        f"Leave my old folder ({OLD_DEFAULT_CONFIG_DIR}) alone, "
-                        f"create a new one at {config_path}, and copy my configuration "
-                        "file there."
-                    ),
-                    "COPY_CONFIG_ONLY",
-                ),
-                pick.Option(
-                    "Exit Falcon Toolkit and do nothing",
-                    "ABORT",
-                ),
-            ],
-            title=(
-                "As of Falcon Toolkit 3.3.0, the configuration directory has moved to a "
-                "platform-specific data configuration directory."
+        option_pairs = [
+            (
+                "MOVE_FOLDER",
+                f"Please move my current folder contents to {config_path}",
+            ),
+            (
+                "LEAVE_ALONE",
+                f"Leave my old folder ({OLD_DEFAULT_CONFIG_DIR}) alone "
+                f"and create a new one at {config_path}",
+            ),
+            (
+                "COPY_CONFIG_ONLY",
+                f"create a new one at {config_path}, and copy my configuration file there",
             )
-        )
+        ]
+        choice = csradiolist_dialog(
+            title="Falcon Toolkit Configuration Directory",
+            text=(
+                "As of Falcon Toolkit 3.3.0, the configuration directory has moved to a "
+                "platform-specific data configuration directory. Please choose how you "
+                "would like the Toolkit to proceed, or press Abort to exit the program "
+                "without making any changes."
+            ),
+            cancel_text="Cancel",
+            values=option_pairs,
+        ).run()
+        if choice is None:
+            click.echo(click.style("Exiting the Toolkit without making changes.", bold=True))
+            sys.exit(1)
 
-        if choice.value == "MOVE_FOLDER":
+        if choice == "MOVE_FOLDER":
             click.echo(f"Moving {OLD_DEFAULT_CONFIG_DIR} to {config_path}")
             os.rename(OLD_DEFAULT_CONFIG_DIR, config_path)
-        elif choice.value == "LEAVE_ALONE":
+        elif choice == "LEAVE_ALONE":
             click.echo(
                 f"Creating a new, empty data directory at {config_path} "
                 "and leaving the original folder alone"
             )
-        elif choice.value == "COPY_CONFIG_ONLY":
+        elif choice == "COPY_CONFIG_ONLY":
             click.echo(
                 f"Creating a new, empty data directory at {config_path} "
                 "and copying the current configuration there"
