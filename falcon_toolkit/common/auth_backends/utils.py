@@ -5,16 +5,17 @@ provide out of the box, as well as any that developers may write in the future. 
 designed to avoid excessive code-reuse between similar implementations of auth backend.
 This file provides:
 - A list of all public CrowdStrike clouds
-- A cloud selection function to allow a user to choose a cloud via pick
+- A cloud selection function to allow a user to choose a cloud via Prompt Toolkit
 - Advanced options configuration for overriding cloud, TLS validation, etc.
 """
 from typing import (
     Dict,
     List,
     NamedTuple,
+    Tuple,
 )
 
-import pick
+from caracara.common.csdialog import csradiolist_dialog
 
 from falcon_toolkit.common.utils import fancy_input
 
@@ -29,13 +30,17 @@ CLOUDS = {
 
 
 def cloud_choice() -> str:
-    """Configure a selection of clouds and allow the user to choose one via pick."""
-    cloud_choices: List[pick.Option] = []
+    """Configure a selection of clouds and allow the user to choose one via Prompt Toolkit."""
+    cloud_choices: List[Tuple] = []
     for cloud_id, cloud_description in CLOUDS.items():
-        cloud_choices.append(pick.Option(cloud_description, cloud_id))
+        cloud_choices.append((cloud_id, cloud_description))
 
-    chosen_option, _ = pick.pick(cloud_choices, title="Please choose a Falcon cloud")
-    chosen_falcon_cloud: str = chosen_option.value
+    chosen_falcon_cloud: str = csradiolist_dialog(
+        title="Falcon Cloud Selection",
+        text="Please choose a Falcon cloud",
+        cancel_text=None,
+        values=cloud_choices,
+    ).run()
 
     return chosen_falcon_cloud
 
@@ -56,12 +61,16 @@ def advanced_options_wizard() -> AdvancedOptionsType:
 
     cloud_name = cloud_choice()
 
-    tls_verify_options: List[pick.Option] = [
-        pick.Option("Verify SSL/TLS certificates (recommended!)", value=True),
-        pick.Option("Do not verify SSL/TLS certificates (not recommended)", False),
+    tls_verify_options = [
+        (True, "Verify SSL/TLS certificates (recommended!)"),
+        (False, "Do not verify SSL/TLS certificates (not recommended)"),
     ]
-    chosen_ssl_verify, _ = pick.pick(tls_verify_options, title="Verify SSL/TLS certificates?")
-    ssl_verify: bool = chosen_ssl_verify.value
+    ssl_verify: bool = csradiolist_dialog(
+        title="Connection Security",
+        text="Enable SSL/TLS certificate verification?",
+        cancel_text=None,
+        values=tls_verify_options,
+    ).run()
 
     proxy_dict = None
     proxy_url_input = fancy_input("HTTPS proxy URL (leave blank if not needed): ", loop=False)

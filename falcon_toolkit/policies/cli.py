@@ -4,13 +4,14 @@ This file contains the command line interface for the policies commands. The imp
 of the logic itself is contained in other files, including policies.py
 """
 import os
+import sys
 
 from typing import List
 
 import click
-import pick
 
 from caracara import Client
+from caracara.common.csdialog import csradiolist_dialog
 from caracara.common.policy_wrapper import Policy
 
 from click_option_group import (
@@ -93,16 +94,23 @@ def policies_export(ctx: click.Context):
     policies_api: PoliciesApiModule = ctx.obj['policies_api']
     policies_type: str = ctx.obj['policies_type']
     click.echo("Loading policies...")
-    policies = policies_api.describe_policies()
+    policies: List[Policy] = policies_api.describe_policies()
 
-    options: List[pick.Option] = []
+    options = []
     for policy in policies:
         option_text = f"{policy.name} [{policy.platform_name}]"
-        option = pick.Option(label=option_text, value=policy)
-        options.append(option)
+        options.append((policy, option_text))
 
-    chosen_option, _ = pick.pick(options, "Please choose a policy to export")
-    chosen_policy: Policy = chosen_option.value
+    chosen_policy = csradiolist_dialog(
+        title="Policy Selection",
+        text="Please choose a policy to export",
+        values=options,
+    ).run()
+
+    if chosen_policy is None:
+        click.echo("No option chosen; aborting.")
+        sys.exit(1)
+
     default_filename = f"{chosen_policy.name}.json"
     reasonable_filename = False
     while not reasonable_filename:

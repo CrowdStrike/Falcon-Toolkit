@@ -5,17 +5,16 @@ user which child CID to authenticate against.
 """
 import os
 
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 import keyring
-import pick
 
 from caracara import Client
 
 from falcon_toolkit.common.auth import AuthBackend
 from falcon_toolkit.common.auth_backends.utils import advanced_options_wizard
 from falcon_toolkit.common.constants import KEYRING_SERVICE_NAME
-from falcon_toolkit.common.utils import fancy_input
+from falcon_toolkit.common.utils import fancy_input, choose_cid
 
 
 class PublicCloudFlightControlParentCIDBackend(AuthBackend):
@@ -118,16 +117,10 @@ class PublicCloudFlightControlParentCIDBackend(AuthBackend):
             )[chosen_cid_str]
         else:
             child_cids_data = parent_client.flight_control.get_child_cid_data(cids=child_cids)
-
-            options: List[pick.Option] = []
-            for child_cid_str, child_cid_data in child_cids_data.items():
-                child_cid_name = child_cid_data['name']
-                option_text = f"{child_cid_str}: {child_cid_name}"
-                option = pick.Option(label=option_text, value=child_cid_str)
-                options.append(option)
-
-            chosen_option, _ = pick.pick(options, "Please select a CID to connect to")
-            chosen_cid_str = chosen_option.value
+            chosen_cid_str = choose_cid(
+                cids=child_cids_data,
+                prompt_text="MSSP Child CID Search"
+            )
             chosen_cid = child_cids_data[chosen_cid_str]
 
         chosen_cid_name = chosen_cid['name']
