@@ -73,7 +73,9 @@ def filename_safe_string(unsafe_string: str) -> str:
 
 class CIDCompleter(Completer):
     """Prompt Toolkit Completer that provides a searchable list of CIDs."""
+
     def __init__(self, data_dict: Dict[str, Dict]):
+        """Create a new CID completer based on a dictionary that maps CIDs to meta strings."""
         self.data_dict = data_dict
 
     def get_completions(
@@ -81,6 +83,7 @@ class CIDCompleter(Completer):
         document: Document,
         complete_event: CompleteEvent,
     ) -> Iterable[Completion]:
+        """Yield CIDs that match the entered search string."""
         for cid, cid_data in self.data_dict.items():
             cid_name = cid_data["name"]
             cloud_name = cid_data.get("cloud_name")
