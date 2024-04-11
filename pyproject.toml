@@ -46,7 +46,7 @@ setuptools = "^69.0"
 falcon = "falcon_toolkit.falcon:cli"
 
 [tool.poetry.group.dev.dependencies]
-flake8 = "^6.0.0"
+flake8 = ">=6,<8"
 pylint = "^3.0.0"
 pytest = "^8.0.1"
 pydocstyle = "^6.1.1"
