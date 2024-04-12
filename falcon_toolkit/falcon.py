@@ -49,6 +49,7 @@ from falcon_toolkit.common.constants import (
 )
 from falcon_toolkit.common.logging_config import configure_logger
 from falcon_toolkit.common.utils import configure_data_dir
+from falcon_toolkit.containment.cli import cli_containment
 from falcon_toolkit.hosts.cli import cli_host_search
 from falcon_toolkit.policies.cli import cli_policies
 from falcon_toolkit.shell.cli import cli_shell
@@ -290,6 +291,7 @@ def cli_list_filters():
 
 
 # Load all commands into the main cli object, ready for use as root falcon commands
+cli.add_command(cli_containment)
 cli.add_command(cli_host_search)
 cli.add_command(cli_list_filters)
 cli.add_command(cli_policies)
