@@ -51,6 +51,7 @@ from falcon_toolkit.common.logging_config import configure_logger
 from falcon_toolkit.common.utils import configure_data_dir
 from falcon_toolkit.containment.cli import cli_containment
 from falcon_toolkit.hosts.cli import cli_host_search
+from falcon_toolkit.maintenance_token.cli import cli_maintenance_token
 from falcon_toolkit.policies.cli import cli_policies
 from falcon_toolkit.shell.cli import cli_shell
 
@@ -294,5 +295,6 @@ def cli_list_filters():
 cli.add_command(cli_containment)
 cli.add_command(cli_host_search)
 cli.add_command(cli_list_filters)
+cli.add_command(cli_maintenance_token)
 cli.add_command(cli_policies)
 cli.add_command(cli_shell)
