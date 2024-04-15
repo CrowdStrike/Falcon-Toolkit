@@ -19,6 +19,7 @@ from falcon_toolkit.common.cli import (
     get_instance,
     parse_cli_filters,
 )
+from falcon_toolkit.containment.perform_containment import perform_containment_action
 
 
 @click.group(
@@ -175,18 +176,11 @@ def contain(ctx: click.Context):
 
     click.echo(f"Network containing {len(device_ids)} systems.")
 
-    limit = 100
-
-    for i in range(0, len(device_ids), limit):
-        click.echo("Network containing a batch of systems...", nl=False)
-        response = client.hosts.hosts_api.perform_action(
-            action_name="contain",
-            ids=device_ids[i: i + limit],
-        )
-        if response['status_code'] == 202:
-            click.echo(click.style("Success", fg='green'))
-        else:
-            click.echo(click.style("Failed", fg='green'))
+    perform_containment_action(
+        device_ids=device_ids,
+        client=client,
+        action="contain",
+    )
 
 
 @cli_containment.command(
@@ -204,15 +198,8 @@ def uncontain(ctx: click.Context):
 
     click.echo(f"Lifting network containment on {len(device_ids)} systems.")
 
-    limit = 100
-
-    for i in range(0, len(device_ids), limit):
-        click.echo("Uncontaining a batch of systems...", nl=False)
-        response = client.hosts.hosts_api.perform_action(
-            action_name="lift_containment",
-            ids=device_ids[i: i + limit],
-        )
-        if response['status_code'] == 202:
-            click.echo(click.style("Success", fg='green'))
-        else:
-            click.echo(click.style("Failed", fg='green'))
+    perform_containment_action(
+        device_ids=device_ids,
+        client=client,
+        action="lift_containment",
+    )
