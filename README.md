@@ -21,8 +21,9 @@ The toolkit provides:
 - Multiple profile support, including support for MSSP / Falcon Flight Control configurations.
 - A shell allowing you to interface with many hosts via RTR at once, and get the output via CSV.
 - Scriptability! You can program the shell by providing pre-written routines via a file on disk, and a full Python extensibility API is provided.
-- Prevention policy import and export
-- Response policy import and export
+- Prevention policy import and export.
+- Response policy import and export.
+- Contain and uncontain systems in bulk, according to filters or a list of device IDs.
 - More functionality is coming soon! Want more functionality? Open an [Issue](https://github.com/CrowdStrike/Falcon-Toolkit/issues/new)!
 
 Since this is built on top of Caracara, you get a bunch of great functionality and flexibility free, including the ability to filter hosts using dynamically generated FQL queries, full debug logging where desired, Falcon Flight Control integration, and more! Plus, the tool is lightning quick as it leverages Caracara's parallelisation tricks to pull more information quickly.
@@ -182,17 +183,18 @@ Two types of configuration backends are provided out of the box: the default, wh
 
 Your API keys should have the following scopes enabled in the Falcon dashboard:
 
-| &darr; API Scopes // Commands &rarr; | `host_search` | `shell` | `policies`<br>(Prevention) | `policies`<br>(Response)  |
-|--------------------------------------|:-------------:|:-------:|:--------------------------:|:-------------------------:|
+| &darr; API Scopes // Commands &rarr; | `host_search` | `shell` | `policies`<br>(Prevention) | `policies`<br>(Response)  | `containment`<br>Host Containment |
+|--------------------------------------|:-------------:|:-------:|:--------------------------:|:-------------------------:|:---------------------------------:|
 | **Falcon Flight Control: Read**      | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* |
-| **Hosts: Read**                      |       X       |    X    |                            |                           |
-| **Prevention Policies: Read**        |               |         | X<br>`describe` / `export` sub-commands |              |
-| **Prevention Policies: Write**       |               |         | X<br>`import` sub-command  |                           |
-| **Real Time Response: Read**         |               |    X    |                            |                           |
-| **Real Time Response: Write**        |               |    X    |                            |                           |
-| **Real Time Response: Admin**        |               |    X<br>*for admin commands*    |    |                           |
-| **Response Policies: Read**          |               |         |                            | X<br>`describe` / `export` sub-commands |
-| **Response Policies: Write**         |               |         |                            | X<br>`import` sub-command |
+| **Hosts: Read**                      |       X       |    X    |                            |                           | X |
+| **Hosts: Write**                     |               |         |                            |                           | X |
+| **Prevention Policies: Read**        |               |         | X<br>`describe` / `export` sub-commands |              |   |
+| **Prevention Policies: Write**       |               |         | X<br>`import` sub-command  |                           |   |
+| **Real Time Response: Read**         |               |    X    |                            |                           |   |
+| **Real Time Response: Write**        |               |    X    |                            |                           |   |
+| **Real Time Response: Admin**        |               |    X<br>*for admin commands*    |    |                           |   |
+| **Response Policies: Read**          |               |         |                            | X<br>`describe` / `export` sub-commands |   |
+| **Response Policies: Write**         |               |         |                            | X<br>`import` sub-command |   |
 
 ### Showing Your Profiles
 
@@ -354,6 +356,46 @@ Some example usages of this functionality are as follows:
 - Execute `self.send_generic_command` directly, then use the returned `(stdout, stderr)` tuple to make decisions about which command to execute next (best suited to single system connections).
 
 </details>
+
+## Network Containment
+
+You can `contain` and `uncontain` systems through Falcon Toolkit. Network containment restricts the network connectivity of matching systems to just the Falcon Platform.
+
+The containment functionality accepts the same command line parameters as `host_search` and `shell` (`-d`, `-df`, or multiple instances of `-f` to apply Falcon filters).
+
+### Examples
+
+Network contain all systems that match the FQL hostname pattern `DEVTEST*`:
+
+```shell
+$ falcon -p MyCompany containment -f Hostname=DEVTEST\* contain
+...
+```
+
+Lift the containment status on the same machines:
+
+```shell
+$ falcon -p MyCompany containment -f Hostname=DEVTEST\* uncontain
+...
+```
+
+Network contain specific systems by AID:
+
+```shell
+$ falcon -p MyCompany containment -d aid1,aid2,aid3 contain
+...
+```
+
+Network contain all systems in a CID:
+
+```shell
+$ falcon -p MyCompany containment contain
+You did not specify any parameters. This command will manage the containment status of ALL devices in the Falcon tenant!
+You must enter the string "I AM SURE!" to proceed.
+Are you sure? I AM SURE!
+...
+```
+
 
 ## Policy Manipulation
 
