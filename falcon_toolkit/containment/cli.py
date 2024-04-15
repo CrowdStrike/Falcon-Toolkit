@@ -67,6 +67,9 @@ def cli_containment(
     client: Client = instance.auth_backend.authenticate()
     ctx.obj['client'] = client
 
+    device_ids = None
+    params = True
+
     if filter_kv_string:
         click.echo(click.style(
             "Managing all hosts that match the provided Falcon filters",
@@ -116,30 +119,45 @@ def cli_containment(
                 if line:
                     device_ids.add(line)
     else:
+        params = False
+
+    if params and device_ids is None:
         click.echo(click.style(
-            "You did not specify any parameters. This command will manage the containment "
-            "status of ALL devices in the Falcon tenant!",
-            fg='yellow',
-        ))
-
-        click.echo("You must enter the string \"I AM SURE!\" to proceed.")
-        confirmation = input("Are you sure? ")
-        if confirmation != "I AM SURE!":
-            print("You did not confirm you were sure. Aborting!")
-            sys.exit(1)
-
-        logging.info("Managing all hosts in the Falcon tenant")
-        device_ids = client.hosts.get_device_ids()
-
-    if device_ids:
-        ctx.obj['device_ids'] = device_ids
-    else:
-        click.echo(click.style(
-            "No devices match the provided filters",
+            "No devices matched the provided filters",
             fg='red',
             bold=True,
         ))
         sys.exit(1)
+
+    ctx.obj['device_ids'] = device_ids
+
+
+def check_empty_device_ids(client) -> List[str]:
+    """Confirm with the user whether all devices should be managed.
+
+    This function has been split out from the group as group parameters are evaluated first,
+    before the individual command parameters. This means that if the user accidentally provides
+    the filter parameters after the individual commands, rather than before, they'll need to
+    write I AM SURE! before being told about their mistake.
+
+    This therefore shifts the user logic to after the group parameters have been evaluated to
+    improve the user experience and avoid confusion.
+    """
+    click.echo(click.style(
+        "You did not specify any parameters. This command will manage the containment "
+        "status of ALL devices in the Falcon tenant!",
+        fg='yellow',
+    ))
+
+    click.echo("You must enter the string \"I AM SURE!\" to proceed.")
+    confirmation = input("Are you sure? ")
+    if confirmation != "I AM SURE!":
+        print("You did not confirm you were sure. Aborting!")
+        sys.exit(1)
+
+    logging.info("Managing all hosts in the Falcon tenant")
+    device_ids = client.hosts.get_device_ids()
+    return device_ids
 
 
 @cli_containment.command(
@@ -151,6 +169,9 @@ def contain(ctx: click.Context):
     """Network contain systems."""
     client: Client = ctx.obj['client']
     device_ids: List[str] = ctx.obj['device_ids']
+
+    if device_ids is None:
+        device_ids = check_empty_device_ids(client)
 
     click.echo(f"Network containing {len(device_ids)} systems.")
 
@@ -177,6 +198,10 @@ def uncontain(ctx: click.Context):
     """Lift network containment on systems."""
     client: Client = ctx.obj['client']
     device_ids: List[str] = ctx.obj['device_ids']
+
+    if device_ids is None:
+        device_ids = check_empty_device_ids(client)
+
     click.echo(f"Lifting network containment on {len(device_ids)} systems.")
 
     limit = 100
