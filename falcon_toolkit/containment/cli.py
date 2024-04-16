@@ -131,6 +131,7 @@ def cli_containment(
         sys.exit(1)
 
     ctx.obj['device_ids'] = device_ids
+    logging.debug(device_ids)
 
 
 def check_empty_device_ids(client) -> List[str]:

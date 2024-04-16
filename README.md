@@ -183,18 +183,19 @@ Two types of configuration backends are provided out of the box: the default, wh
 
 Your API keys should have the following scopes enabled in the Falcon dashboard:
 
-| &darr; API Scopes // Commands &rarr; | `host_search` | `shell` | `policies`<br>(Prevention) | `policies`<br>(Response)  | `containment`<br>Host Containment |
-|--------------------------------------|:-------------:|:-------:|:--------------------------:|:-------------------------:|:---------------------------------:|
-| **Falcon Flight Control: Read**      | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* |
-| **Hosts: Read**                      |       X       |    X    |                            |                           | X |
-| **Hosts: Write**                     |               |         |                            |                           | X |
-| **Prevention Policies: Read**        |               |         | X<br>`describe` / `export` sub-commands |              |   |
-| **Prevention Policies: Write**       |               |         | X<br>`import` sub-command  |                           |   |
-| **Real Time Response: Read**         |               |    X    |                            |                           |   |
-| **Real Time Response: Write**        |               |    X    |                            |                           |   |
-| **Real Time Response: Admin**        |               |    X<br>*for admin commands*    |    |                           |   |
-| **Response Policies: Read**          |               |         |                            | X<br>`describe` / `export` sub-commands |   |
-| **Response Policies: Write**         |               |         |                            | X<br>`import` sub-command |   |
+| &darr; API Scopes // Commands &rarr; | `host_search` | `shell` | `policies`<br>(Prevention) | `policies`<br>(Response)  | `containment`<br>Host Containment | `maintenance_token`<br>Maintenance Tokens |
+|--------------------------------------|:-------------:|:-------:|:--------------------------:|:-------------------------:|:---------------------------------:|:-----------------------------------------:|
+| **Falcon Flight Control: Read**      | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | | |
+| **Hosts: Read**                      |       X       |    X    |                            |                           | X | X |
+| **Hosts: Write**                     |               |         |                            |                           | X | |
+| **Prevention Policies: Read**        |               |         | X<br>`describe` / `export` sub-commands |              |   | |
+| **Prevention Policies: Write**       |               |         | X<br>`import` sub-command  |                           |   | |
+| **Real Time Response: Read**         |               |    X    |                            |                           |   | |
+| **Real Time Response: Write**        |               |    X    |                            |                           |   | |
+| **Real Time Response: Admin**        |               |    X<br>*for admin commands*    |    |                           |   | |
+| **Response Policies: Read**          |               |         |                            | X<br>`describe` / `export` sub-commands |   | |
+| **Response Policies: Write**         |               |         |                            | X<br>`import` sub-command |   | |
+| **Sensor Update Policies: Write**    |               |         |                            |                           |   | X |
 
 ### Showing Your Profiles
 
@@ -356,6 +357,33 @@ Some example usages of this functionality are as follows:
 - Execute `self.send_generic_command` directly, then use the returned `(stdout, stderr)` tuple to make decisions about which command to execute next (best suited to single system connections).
 
 </details>
+
+## Maintenance Tokens
+
+You can fetch maintenance tokens for systems within your Falcon tenant, or retrieve the bulk maintenance token.
+
+### Examples
+
+Show the bulk maintenance token:
+
+```shell
+$ falcon -p MyCompany maintenance_token -b
+Getting the bulk maintenance token
+Bulk maintenance token: redactedexample12345
+WARNING: this token must be kept safe, as it can uninstall all Falcon sensors!
+```
+
+Show a token for a specific system located by hostname:
+
+```shell
+$ falcon -p MyCompany maintenance_token -f Hostname=MY-TEST-BOX-1
+```
+
+Show maintenance tokens for a list of device IDs provided on the command line:
+
+```shell
+$ falcon -p MyCompany maintenance_token -d aid1,aid2,...
+```
 
 ## Network Containment
 
