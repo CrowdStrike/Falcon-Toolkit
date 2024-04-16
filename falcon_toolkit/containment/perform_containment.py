@@ -11,6 +11,7 @@ import click
 import tabulate
 
 from caracara import Client
+from caracara.common.csdialog import csradiolist_dialog
 
 
 def result_output(
@@ -71,6 +72,38 @@ def result_output(
     ))
 
 
+def guard_rail_confirmation(device_count: int, action: str) -> bool:
+    """Confirm via a visual Prompt Toolkit box whether the user really wants to (un)contain."""
+    if action == "contain":
+        confirmation_options = [
+            (False, "Abort"),
+            (True, f"Network contain {device_count} devices"),
+        ]
+        prompt_text = f"Are you sure you want to network contain {device_count} devices?"
+    else:
+        confirmation_options = [
+            (False, "Abort"),
+            (True, f"Release {device_count} devices from network containment"),
+        ]
+        prompt_text = (
+            f"Are you sure you want to release {device_count} devices "
+            "from network containment?"
+        )
+
+    confirmation: bool = csradiolist_dialog(
+        title="Confirm Network Containment Action",
+        text=prompt_text,
+        values=confirmation_options,
+    ).run()
+
+    if confirmation:
+        click.echo(click.style("User confirmed action", bold=True, fg='green'))
+        return True
+
+    click.echo(click.style("Aborted!", bold=True, fg='red'))
+    return False
+
+
 def perform_containment_action(
     device_ids: List[str],
     client: Client,
@@ -82,12 +115,17 @@ def perform_containment_action(
     if action not in ("contain", "lift_containment"):
         raise ValueError(f"{action} is not a supported device action in this function")
 
+    device_count = len(device_ids)
+    if not guard_rail_confirmation(device_count, action):
+        return
+
     limit = 100
     resources = []
     errors = []
 
-    for i in range(0, len(device_ids), limit):
+    for i in range(0, device_count, limit):
         click.echo("Changing the network containment status on a batch of systems...", nl=False)
+
         response = client.hosts.hosts_api.perform_action(
             action_name=action,
             ids=device_ids[i: i + limit],
