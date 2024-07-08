@@ -2,6 +2,7 @@
 
 This file contains the CLI options for the falcon containment commands.
 """
+
 import logging
 import sys
 
@@ -23,26 +24,26 @@ from falcon_toolkit.containment.perform_containment import perform_containment_a
 
 
 @click.group(
-    name='containment',
+    name="containment",
     help="Manage the containment status of systems in a CID",
 )
 @click.pass_context
 @optgroup.group(
     "Specify devices",
     cls=MutuallyExclusiveOptionGroup,
-    help="Choose no more than one method to choose systems to contain or uncontain"
+    help="Choose no more than one method to choose systems to contain or uncontain",
 )
 @optgroup.option(
-    '-d',
-    '--device-id-list',
-    'device_id_list',
+    "-d",
+    "--device-id-list",
+    "device_id_list",
     type=click.STRING,
-    help="Specify a list of Device IDs (AIDs), comma delimited"
+    help="Specify a list of Device IDs (AIDs), comma delimited",
 )
 @optgroup.option(
-    '-df',
-    '--device-id-file',
-    'device_id_file',
+    "-df",
+    "--device-id-file",
+    "device_id_file",
     type=click.STRING,
     help=(
         "Specify a list of Device IDs (AIDs) in an external file, one per line; "
@@ -50,9 +51,9 @@ from falcon_toolkit.containment.perform_containment import perform_containment_a
     ),
 )
 @optgroup.option(
-    '-f',
-    '--filter',
-    'filter_kv_string',
+    "-f",
+    "--filter",
+    "filter_kv_string",
     type=click.STRING,
     multiple=True,
     help="Filter hosts based on standard Falcon filters",
@@ -66,20 +67,21 @@ def cli_containment(
     """Manage the containment status of hosts in Falcon."""
     instance = get_instance(ctx)
     client: Client = instance.auth_backend.authenticate()
-    ctx.obj['client'] = client
+    ctx.obj["client"] = client
 
     device_ids = None
     params = True
 
     if filter_kv_string:
-        click.echo(click.style(
-            "Managing all hosts that match the provided Falcon filters",
-            fg='magenta',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "Managing all hosts that match the provided Falcon filters",
+                fg="magenta",
+                bold=True,
+            )
+        )
         logging.info(
-            "Managing the containment status of all hosts that match the "
-            "provided Falcon filters"
+            "Managing the containment status of all hosts that match the " "provided Falcon filters"
         )
 
         filters = parse_cli_filters(filter_kv_string, client).get_fql()
@@ -90,11 +92,13 @@ def cli_containment(
         device_ids = client.hosts.get_device_ids(filters=filters)
 
     elif device_id_list:
-        click.echo(click.style(
-            "Managing the devices identified by the IDs provided on the command line",
-            fg='magenta',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "Managing the devices identified by the IDs provided on the command line",
+                fg="magenta",
+                bold=True,
+            )
+        )
         logging.info("Managing the devices identified by the IDs provided on the command line")
 
         device_ids = set()
@@ -104,16 +108,18 @@ def cli_containment(
                 device_ids.add(device_id)
 
     elif device_id_file:
-        click.echo(click.style(
-            "Managing the devices identified by the IDs listed in a file",
-            fg='magenta',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "Managing the devices identified by the IDs listed in a file",
+                fg="magenta",
+                bold=True,
+            )
+        )
         click.echo(click.style("File path: ", bold=True), nl=False)
         click.echo(device_id_file)
         logging.info("Managing the devices identified by the IDs listed in %s", device_id_file)
 
-        with open(device_id_file, 'rt', encoding='ascii') as device_id_file_handle:
+        with open(device_id_file, "rt", encoding="ascii") as device_id_file_handle:
             device_ids = set()
             for line in device_id_file_handle:
                 line = line.strip()
@@ -123,14 +129,16 @@ def cli_containment(
         params = False
 
     if params and device_ids is None:
-        click.echo(click.style(
-            "No devices matched the provided filters",
-            fg='red',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "No devices matched the provided filters",
+                fg="red",
+                bold=True,
+            )
+        )
         sys.exit(1)
 
-    ctx.obj['device_ids'] = device_ids
+    ctx.obj["device_ids"] = device_ids
     logging.debug(device_ids)
 
 
@@ -145,13 +153,15 @@ def check_empty_device_ids(client) -> List[str]:
     This therefore shifts the user logic to after the group parameters have been evaluated to
     improve the user experience and avoid confusion.
     """
-    click.echo(click.style(
-        "You did not specify any parameters. This command will manage the containment "
-        "status of ALL devices in the Falcon tenant!",
-        fg='yellow',
-    ))
+    click.echo(
+        click.style(
+            "You did not specify any parameters. This command will manage the containment "
+            "status of ALL devices in the Falcon tenant!",
+            fg="yellow",
+        )
+    )
 
-    click.echo("You must enter the string \"I AM SURE!\" to proceed.")
+    click.echo('You must enter the string "I AM SURE!" to proceed.')
     confirmation = input("Are you sure? ")
     if confirmation != "I AM SURE!":
         print("You did not confirm you were sure. Aborting!")
@@ -163,14 +173,14 @@ def check_empty_device_ids(client) -> List[str]:
 
 
 @cli_containment.command(
-    name='contain',
-    help='Network contain systems in a Falcon tenant',
+    name="contain",
+    help="Network contain systems in a Falcon tenant",
 )
 @click.pass_context
 def contain(ctx: click.Context):
     """Network contain systems."""
-    client: Client = ctx.obj['client']
-    device_ids: List[str] = ctx.obj['device_ids']
+    client: Client = ctx.obj["client"]
+    device_ids: List[str] = ctx.obj["device_ids"]
 
     if device_ids is None:
         device_ids = check_empty_device_ids(client)
@@ -185,14 +195,14 @@ def contain(ctx: click.Context):
 
 
 @cli_containment.command(
-    name='uncontain',
-    help='Lift network containment from systems in a Falcon tenant',
+    name="uncontain",
+    help="Lift network containment from systems in a Falcon tenant",
 )
 @click.pass_context
 def uncontain(ctx: click.Context):
     """Lift network containment on systems."""
-    client: Client = ctx.obj['client']
-    device_ids: List[str] = ctx.obj['device_ids']
+    client: Client = ctx.obj["client"]
+    device_ids: List[str] = ctx.obj["device_ids"]
 
     if device_ids is None:
         device_ids = check_empty_device_ids(client)

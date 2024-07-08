@@ -8,6 +8,7 @@ This file provides:
 - A cloud selection function to allow a user to choose a cloud via Prompt Toolkit
 - Advanced options configuration for overriding cloud, TLS validation, etc.
 """
+
 from typing import (
     Dict,
     List,
@@ -56,8 +57,8 @@ class AdvancedOptionsType(NamedTuple):
 def advanced_options_wizard() -> AdvancedOptionsType:
     """Define advanced connection options and return an AdvancedOptionsType."""
     advanced_options_input = fancy_input("Do you want to configure more options? [y/n]: ")
-    if advanced_options_input not in ('y', 'Y'):
-        return AdvancedOptionsType('auto', True, None)
+    if advanced_options_input not in ("y", "Y"):
+        return AdvancedOptionsType("auto", True, None)
 
     cloud_name = cloud_choice()
 
@@ -76,7 +77,7 @@ def advanced_options_wizard() -> AdvancedOptionsType:
     proxy_url_input = fancy_input("HTTPS proxy URL (leave blank if not needed): ", loop=False)
 
     if proxy_url_input:
-        proxy_dict = {'https', proxy_url_input}
+        proxy_dict = {"https", proxy_url_input}
 
     advanced_options_result = AdvancedOptionsType(cloud_name, ssl_verify, proxy_dict)
     return advanced_options_result

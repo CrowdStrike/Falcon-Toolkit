@@ -2,6 +2,7 @@
 
 This file contains the logic required to contain and uncontain systems.
 """
+
 import logging
 
 from operator import itemgetter
@@ -24,8 +25,8 @@ def result_output(
         return
 
     header_row = [
-        click.style("Device ID", bold=True, fg='blue'),
-        click.style("Result", bold=True, fg='blue'),
+        click.style("Device ID", bold=True, fg="blue"),
+        click.style("Result", bold=True, fg="blue"),
     ]
     results_table = [header_row]
 
@@ -33,10 +34,12 @@ def result_output(
     if resources:
         success_rows = []
         for resource in resources:
-            success_rows.append([
-                resource['id'],
-                click.style("Success", fg='green'),
-            ])
+            success_rows.append(
+                [
+                    resource["id"],
+                    click.style("Success", fg="green"),
+                ]
+            )
 
         success_rows = sorted(success_rows, key=itemgetter(1, 0))
         results_table.extend(success_rows)
@@ -44,32 +47,36 @@ def result_output(
     if errors:
         error_rows = []
         for error in errors:
-            code = error['code']
-            message = error['message']
+            code = error["code"]
+            message = error["message"]
 
             if message.startswith("Device "):
                 device_id = message.split(" ")[1]
             else:
                 device_id = "Unknown"
 
-            result_text = click.style("Failed", fg='red')
+            result_text = click.style("Failed", fg="red")
             if code == 409:
                 result_text += ": incompatible current containment state"
             else:
                 result_text += f": {message} (code: {code})"
 
-            error_rows.append([
-                device_id,
-                result_text,
-            ])
+            error_rows.append(
+                [
+                    device_id,
+                    result_text,
+                ]
+            )
 
         error_rows = sorted(error_rows, key=itemgetter(1, 0))
         results_table.extend(error_rows)
 
-    click.echo(tabulate.tabulate(
-        results_table,
-        tablefmt='fancy_grid',
-    ))
+    click.echo(
+        tabulate.tabulate(
+            results_table,
+            tablefmt="fancy_grid",
+        )
+    )
 
 
 def guard_rail_confirmation(device_count: int, action: str) -> bool:
@@ -86,8 +93,7 @@ def guard_rail_confirmation(device_count: int, action: str) -> bool:
             (True, f"Release {device_count} devices from network containment"),
         ]
         prompt_text = (
-            f"Are you sure you want to release {device_count} devices "
-            "from network containment?"
+            f"Are you sure you want to release {device_count} devices " "from network containment?"
         )
 
     confirmation: bool = csradiolist_dialog(
@@ -97,10 +103,10 @@ def guard_rail_confirmation(device_count: int, action: str) -> bool:
     ).run()
 
     if confirmation:
-        click.echo(click.style("User confirmed action", bold=True, fg='green'))
+        click.echo(click.style("User confirmed action", bold=True, fg="green"))
         return True
 
-    click.echo(click.style("Aborted!", bold=True, fg='red'))
+    click.echo(click.style("Aborted!", bold=True, fg="red"))
     return False
 
 
@@ -128,22 +134,22 @@ def perform_containment_action(
 
         response = client.hosts.hosts_api.perform_action(
             action_name=action,
-            ids=device_ids[i: i + limit],
+            ids=device_ids[i : i + limit],
         )
         logging.debug(response)
 
-        if response['status_code'] == 202:
-            click.echo(click.style("Succeeded", fg='green'))
-        elif 'resources' in response['body'] and response['body']['resources']:
-            click.echo(click.style("Partially succeeded", fg='yellow'))
+        if response["status_code"] == 202:
+            click.echo(click.style("Succeeded", fg="green"))
+        elif "resources" in response["body"] and response["body"]["resources"]:
+            click.echo(click.style("Partially succeeded", fg="yellow"))
         else:
-            click.echo(click.style("Failed", fg='red'))
+            click.echo(click.style("Failed", fg="red"))
 
-        batch_resources = response['body'].get("resources")
+        batch_resources = response["body"].get("resources")
         if batch_resources:
             resources.extend(batch_resources)
 
-        batch_errors = response['body'].get("errors")
+        batch_errors = response["body"].get("errors")
         if batch_errors:
             errors.extend(batch_errors)
 

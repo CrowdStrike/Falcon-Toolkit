@@ -3,6 +3,7 @@
 This file contains constants that are required to properly display and manage Prevention and
 Response policies within a Falcon tenant.
 """
+
 from typing import Union
 
 from caracara.modules.prevention_policies import PreventionPoliciesApiModule

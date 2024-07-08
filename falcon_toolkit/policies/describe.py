@@ -2,6 +2,7 @@
 
 This code file contains all the logic required to describe policies in a visually clean way.
 """
+
 from textwrap import TextWrapper
 from typing import List
 
@@ -24,10 +25,10 @@ def pretty_print_policies(policies: List[Policy]):
     """Format a list of Prevention or Detection policies neatly and write them out to screen."""
     for policy in policies:
         click.echo(
-            click.style(policy.name, bold=True) +
-            " (Platform: " +
-            click.style(policy.platform_name, fg='red') +
-            ")"
+            click.style(policy.name, bold=True)
+            + " (Platform: "
+            + click.style(policy.platform_name, fg="red")
+            + ")"
         )
         if policy.description:
             click.echo(f"    {policy.description}")
@@ -58,10 +59,10 @@ def pretty_print_policies(policies: List[Policy]):
                 setting_cells = []
 
                 setting_title = (
-                    click.style(setting.name, bold=True) +
-                    "\n" +
-                    '\n'.join(setting_desc_wrap.wrap(setting.description)) +
-                    "\n"
+                    click.style(setting.name, bold=True)
+                    + "\n"
+                    + "\n".join(setting_desc_wrap.wrap(setting.description))
+                    + "\n"
                 )
                 if isinstance(setting, TogglePolicySetting):
                     # Toggles have an ON or OFF button ASCII graphic available
@@ -82,12 +83,14 @@ def pretty_print_policies(policies: List[Policy]):
             settings_table.append(row)
 
         # Write the table to screen
-        click.echo(tabulate.tabulate(
-            settings_table,
-            tablefmt="fancy_grid",
-        ))
+        click.echo(
+            tabulate.tabulate(
+                settings_table,
+                tablefmt="fancy_grid",
+            )
+        )
 
         # Draw some blank space and a divider line to go between Policies
         click.echo()
-        click.echo("-"*80)
+        click.echo("-" * 80)
         click.echo()

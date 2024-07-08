@@ -5,6 +5,7 @@ Each authentication backend has to be able to return a Caracara Client object, w
 hold a FalconPy authentication object. It will be possible to generate more of these backends for
 other purposes, such as for authentication against alternative API gateways.
 """
+
 from __future__ import annotations
 from abc import (
     abstractmethod,

@@ -38,9 +38,7 @@ class FalconRecursiveNamespace:
 
     def __setitem__(self, key, value):
         """Assign a key to a value in the namespace."""
-        self.__init__(
-            ** {key: value}
-        )
+        self.__init__(**{key: value})
 
     def __delitem__(self, key):
         """Delete an item from the namespace."""

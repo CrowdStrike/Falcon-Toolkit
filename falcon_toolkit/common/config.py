@@ -4,6 +4,7 @@ Each instance configuration contains the logic required to log in to Falcon.
 These configurations are stored in a wider config file stored within the configuration
 path (usually ~/FalconToolkit/FalconToolkit.json).
 """
+
 from __future__ import annotations
 import importlib.util
 import json
@@ -63,9 +64,7 @@ class FalconInstanceConfig:
                 break
 
         if not matching_auth_backend:
-            raise ValueError(
-                f"Auth backend {auth_backend_name} is not loaded or does not exist"
-            )
+            raise ValueError(f"Auth backend {auth_backend_name} is not loaded or does not exist")
 
         auth_backend_config = auth.get("backend_config")
         if not auth_backend_config:
@@ -81,7 +80,7 @@ class FalconInstanceConfig:
             "auth": {
                 "backend_name": self.auth_backend.simple_name,
                 "backend_config": self.auth_backend.dump_config(),
-            }
+            },
         }
 
 
@@ -113,7 +112,7 @@ class FalconToolkitConfig:
         """Load a Falcon Toolkit configuration file from disk."""
         self.config_file_path = os.path.join(config_path, CONFIG_FILENAME)
         if os.path.exists(self.config_file_path):
-            with open(self.config_file_path, 'rb') as config_file_handle:
+            with open(self.config_file_path, "rb") as config_file_handle:
                 config_data = json.load(config_file_handle)
         else:
             config_data = {}
@@ -139,7 +138,7 @@ class FalconToolkitConfig:
             "auth_backends": self.additional_auth_backend_paths,
             "instances": [x.dump_config() for x in list(self.instances.values())],
         }
-        with open(self.config_file_path, 'w', encoding='utf8') as config_file_handle:
+        with open(self.config_file_path, "w", encoding="utf8") as config_file_handle:
             json.dump(config_data, config_file_handle, sort_keys=True, indent=4)
 
     def add_instance(self):

@@ -2,6 +2,7 @@
 
 This file contains the CLI options for the falcon maintenance_token command.
 """
+
 import logging
 
 from typing import List
@@ -23,7 +24,7 @@ from falcon_toolkit.maintenance_token.device_tokens import show_device_maintenan
 
 @click.command(
     name="maintenance_token",
-    help="Get the maintenance token for a device, or get the bulk maintenance token"
+    help="Get the maintenance token for a device, or get the bulk maintenance token",
 )
 @click.pass_context
 @optgroup.group(
@@ -32,25 +33,25 @@ from falcon_toolkit.maintenance_token.device_tokens import show_device_maintenan
     help="Choose no more than one method to choose systems to fetch the maintenance tokens for",
 )
 @optgroup.option(
-    '-b',
-    '--bulk',
-    'bulk_token',
+    "-b",
+    "--bulk",
+    "bulk_token",
     type=click.BOOL,
     is_flag=True,
     default=False,
     help="Get the CID-wide bulk maintenance token",
 )
 @optgroup.option(
-    '-d',
-    '--device-id-list',
-    'device_id_list',
+    "-d",
+    "--device-id-list",
+    "device_id_list",
     type=click.STRING,
-    help="Specify a list of Device IDs (AIDs), comma delimited"
+    help="Specify a list of Device IDs (AIDs), comma delimited",
 )
 @optgroup.option(
-    '-df',
-    '--device-id-file',
-    'device_id_file',
+    "-df",
+    "--device-id-file",
+    "device_id_file",
     type=click.STRING,
     help=(
         "Specify a list of Device IDs (AIDs) in an external file, one per line; "
@@ -58,9 +59,9 @@ from falcon_toolkit.maintenance_token.device_tokens import show_device_maintenan
     ),
 )
 @optgroup.option(
-    '-f',
-    '--filter',
-    'filter_kv_string',
+    "-f",
+    "--filter",
+    "filter_kv_string",
     type=click.STRING,
     multiple=True,
     help="Filter hosts based on standard Falcon filters",
@@ -75,35 +76,41 @@ def cli_maintenance_token(
     """Get system maintenance tokens from Falcon."""
     instance = get_instance(ctx)
     client: Client = instance.auth_backend.authenticate()
-    ctx.obj['client'] = client
+    ctx.obj["client"] = client
 
     # Bulk token is a special case we can handle here.
     # Device tokens need to be handled elsewhere.
     if bulk_token:
-        click.echo(click.style(
-            "Getting the bulk maintenance token",
-            fg='magenta',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "Getting the bulk maintenance token",
+                fg="magenta",
+                bold=True,
+            )
+        )
         token = client.sensor_update_policies.get_bulk_maintenance_token(
             audit_message="Fetched via Falcon Toolkit",
         )
         click.echo("Bulk maintenance token: ", nl=False)
-        click.echo(click.style(token, bold=True, fg='blue'))
-        click.echo(click.style(
-            "WARNING: this token must be kept safe, as it can uninstall all Falcon sensors!",
-            bold=True,
-            fg='red',
-        ))
+        click.echo(click.style(token, bold=True, fg="blue"))
+        click.echo(
+            click.style(
+                "WARNING: this token must be kept safe, as it can uninstall all Falcon sensors!",
+                bold=True,
+                fg="red",
+            )
+        )
 
         return
 
     if filter_kv_string:
-        click.echo(click.style(
-            "Getting the maintenance tokens for all hosts that match the provided Falcon filters",
-            fg='magenta',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "Getting the maintenance tokens for all hosts that match the provided Falcon filters",
+                fg="magenta",
+                bold=True,
+            )
+        )
         logging.info("Getting maintenance tokens for all devices that match the provided filters")
 
         filters = parse_cli_filters(filter_kv_string, client).get_fql()
@@ -114,12 +121,14 @@ def cli_maintenance_token(
         device_ids = client.hosts.get_device_ids(filters=filters)
 
     elif device_id_list:
-        click.echo(click.style(
-            "Getting the maintenance tokens for the devices identified by the IDs provided on "
-            "the command line",
-            fg='magenta',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "Getting the maintenance tokens for the devices identified by the IDs provided on "
+                "the command line",
+                fg="magenta",
+                bold=True,
+            )
+        )
         logging.info(
             "Getting the maintenance tokens for the devices identified by the IDs "
             "provided on the command line"
@@ -132,19 +141,21 @@ def cli_maintenance_token(
                 device_ids.add(device_id)
 
     elif device_id_file:
-        click.echo(click.style(
-            "Getting the maintenance tokens for the devices identified by the IDs listed in a file",
-            fg='magenta',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "Getting the maintenance tokens for the devices identified by the IDs listed in a file",
+                fg="magenta",
+                bold=True,
+            )
+        )
         click.echo(click.style("File path: ", bold=True), nl=False)
         click.echo(device_id_file)
         logging.info(
             "Getting the maintenance tokens for the devices identified by the IDs listed in %s",
-            device_id_file
+            device_id_file,
         )
 
-        with open(device_id_file, 'rt', encoding='ascii') as device_id_file_handle:
+        with open(device_id_file, "rt", encoding="ascii") as device_id_file_handle:
             device_ids = set()
             for line in device_id_file_handle:
                 line = line.strip()
@@ -152,12 +163,14 @@ def cli_maintenance_token(
                     device_ids.add(line)
 
     else:
-        click.echo(click.style(
-            "Getting the maintenance token for all systems in the tenant!",
-            bold=True,
-            fg='yellow',
-        ))
-        click.echo("You must enter the string \"I AM SURE!\" to proceed.")
+        click.echo(
+            click.style(
+                "Getting the maintenance token for all systems in the tenant!",
+                bold=True,
+                fg="yellow",
+            )
+        )
+        click.echo('You must enter the string "I AM SURE!" to proceed.')
         confirmation = input("Are you sure? ")
         if confirmation != "I AM SURE!":
             print("You did not confirm you were sure. Aborting!")
@@ -172,8 +185,10 @@ def cli_maintenance_token(
             client=client,
         )
     else:
-        click.echo(click.style(
-            "No devices matched the provided filters",
-            fg='red',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "No devices matched the provided filters",
+                fg="red",
+                bold=True,
+            )
+        )

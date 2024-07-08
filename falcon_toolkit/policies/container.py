@@ -3,6 +3,7 @@
 This file contains a data model to hold a poilicy object, along with the associated Falcon
 Toolkit-specific metadata required to ensure that an import will succeed.
 """
+
 import json
 
 from typing import Dict, List, Type
@@ -58,20 +59,19 @@ class PolicyContainer:
             )
 
         try:
-            enabled: bool = import_data['enabled']
-            name: str = import_data['name']
-            platform_name: str = import_data['platform_name']
-            policy_type: str = import_data['policy_type']
-            settings_key_name: str = import_data['settings_key_name']
-            settings_groups: List[Dict] = import_data['settings_groups']
+            enabled: bool = import_data["enabled"]
+            name: str = import_data["name"]
+            platform_name: str = import_data["platform_name"]
+            policy_type: str = import_data["policy_type"]
+            settings_key_name: str = import_data["settings_key_name"]
+            settings_groups: List[Dict] = import_data["settings_groups"]
         except KeyError as exc:
             raise KeyError("Policy export does not contain all the required fields.") from exc
 
         if policy_type not in POLICY_TYPES:
             raise ValueError(
                 "Policy is not of a supported type. This version of Falcon Toolkit "
-                "only supports these policy types: " +
-                str(POLICY_TYPES)
+                "only supports these policy types: " + str(POLICY_TYPES)
             )
 
         description: str = import_data.get("description", "Imported by Falcon Toolkit")
