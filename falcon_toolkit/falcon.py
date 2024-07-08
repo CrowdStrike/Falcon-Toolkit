@@ -86,11 +86,22 @@ from falcon_toolkit.shell.cli import cli_shell
         "profile (Falcon Tenant) set up, this parameter is not required."
     ),
 )
+@click.option(
+    "--cid",
+    envvar="FALCON_TOOLKIT_CID",
+    type=click.STRING,
+    default=None,
+    help=(
+        "Specify the CID to connect to. Note that this only applies to authentication backends "
+        "(e.g., MSSP) that support multiple CIDs through the same set of API keys."
+    ),
+)
 def cli(
     ctx: click.Context,
     config_path: str,
     verbose: bool,
     profile: str,
+    cid: str,
 ):
     r"""Falcon Toolkit.
 
@@ -205,7 +216,10 @@ def cli(
     ctx.obj["log_filename_base"] = log_filename_base
 
     # Pass a profile name down the chain in case one is selected
-    ctx.obj['profile_name'] = profile
+    ctx.obj["profile_name"] = profile
+
+    # Store the CID in the context for optional use later
+    ctx.obj["cid"] = cid
 
 
 @cli.result_callback()
