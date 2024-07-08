@@ -4,8 +4,6 @@ This authentication backend can take public cloud API keys (US-1, US-2, EU-1), a
 user which child CID to authenticate against.
 """
 
-import os
-
 from typing import Dict, Optional
 
 import click
@@ -104,14 +102,7 @@ class PublicCloudFlightControlParentCIDBackend(AuthBackend):
 
     def authenticate(self, ctx: click.Context) -> Client:
         """Log the Toolkit into Falcon using the settings and keys configured at instance setup."""
-
-        # We allow loading of an MSSP CID from the environment
-        chosen_cid_str = os.environ.get("FALCON_TOOLKIT_MSSP_CHILD_CID")
-
-        # ...but the one passed on the CLI always takes precedence
-        chosen_cid_str_ctx = ctx.obj["cid"]
-        if chosen_cid_str_ctx:
-            chosen_cid_str = chosen_cid_str_ctx
+        chosen_cid_str = ctx.obj["cid"]
 
         parent_client = Client(
             client_id=self.client_id,
