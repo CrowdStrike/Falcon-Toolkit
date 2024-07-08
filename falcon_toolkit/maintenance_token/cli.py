@@ -75,7 +75,7 @@ def cli_maintenance_token(
 ):
     """Get system maintenance tokens from Falcon."""
     instance = get_instance(ctx)
-    client: Client = instance.auth_backend.authenticate()
+    client: Client = instance.auth_backend.authenticate(ctx)
     ctx.obj["client"] = client
 
     # Bulk token is a special case we can handle here.

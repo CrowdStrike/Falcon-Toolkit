@@ -66,7 +66,7 @@ def cli_containment(
 ):
     """Manage the containment status of hosts in Falcon."""
     instance = get_instance(ctx)
-    client: Client = instance.auth_backend.authenticate()
+    client: Client = instance.auth_backend.authenticate(ctx)
     ctx.obj["client"] = client
 
     device_ids = None

@@ -122,7 +122,7 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
     start the REPL command loop. This passes control over to the shell, via the Cmd2 library.
     """
     instance = get_instance(ctx)
-    client = instance.auth_backend.authenticate()
+    client = instance.auth_backend.authenticate(ctx)
 
     # Show online hosts only if queueing is false
     online_state = None if queueing else OnlineState.ONLINE

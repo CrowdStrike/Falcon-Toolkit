@@ -6,6 +6,7 @@ an OAuth2 object suitable for authenticating with FalconPy.
 
 from typing import Dict, Optional
 
+import click
 import keyring
 
 from caracara import Client
@@ -89,7 +90,7 @@ class PublicCloudSingleCIDBackend(AuthBackend):
 
         return config
 
-    def authenticate(self) -> Client:
+    def authenticate(self, ctx: click.Context) -> Client:
         """Log the Toolkit into Falcon using the settings and keys configured at instance setup."""
         client = Client(
             client_id=self.client_id,
