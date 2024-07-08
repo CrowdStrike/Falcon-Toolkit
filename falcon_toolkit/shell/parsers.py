@@ -42,13 +42,13 @@ cloud_scripts_argparser = Cmd2ArgumentParser()
 cloud_scripts_argparser.add_argument(
     "-s",
     "--show-content",
-    help=("Show the content of each script on-screen " "(may produce long outputs!)"),
+    help=("Show the content of each script on-screen (may produce long outputs!)"),
     dest="show_content",
     action="store_true",
 )
 cloud_scripts_argparser.add_argument(
     "script_name",
-    help=("Only show information about a specific script " "(default: all scripts)"),
+    help=("Only show information about a specific script (default: all scripts)"),
     nargs="?",
     choices=CLOUD_SCRIPT_CHOICES,
 )
@@ -632,7 +632,7 @@ xmemdump_argparser.add_argument(
     "mode",
     choices=["complete", "kerneldbg"],
     type=str.lower,
-    help=("Complete (complete host memory) or " "KernelDbg (kernel memory with debug symbols)"),
+    help=("Complete (complete host memory) or KernelDbg (kernel memory with debug symbols)"),
 )
 xmemdump_argparser.add_argument(
     "destination",

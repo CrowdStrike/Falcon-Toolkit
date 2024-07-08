@@ -81,7 +81,7 @@ def cli_containment(
             )
         )
         logging.info(
-            "Managing the containment status of all hosts that match the " "provided Falcon filters"
+            "Managing the containment status of all hosts that match the provided Falcon filters"
         )
 
         filters = parse_cli_filters(filter_kv_string, client).get_fql()

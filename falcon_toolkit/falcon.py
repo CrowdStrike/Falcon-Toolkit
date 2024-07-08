@@ -205,7 +205,7 @@ def cli(
     ctx.obj["log_filename_base"] = log_filename_base
 
     # Pass a profile name down the chain in case one is selected
-    ctx.obj['profile_name'] = profile
+    ctx.obj["profile_name"] = profile
 
 
 @cli.result_callback()

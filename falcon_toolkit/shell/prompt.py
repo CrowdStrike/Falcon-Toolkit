@@ -505,8 +505,7 @@ class RTRPrompt(Cmd):
             key=lambda x: x[1]["name"],
         )
 
-        if args.script_name:
-            found_script = False
+        found_script = False
 
         # Since we've made this API call, we might as well update the
         # choices for the parser, too.
@@ -900,7 +899,7 @@ class RTRPrompt(Cmd):
             self.send_generic_command("restart -Confirm")
         else:
             self.poutput(
-                Fore.YELLOW + "You must confirm a restart with -Confirm. " "No action was taken."
+                Fore.YELLOW + "You must confirm a restart with -Confirm. No action was taken."
             )
 
     @with_argparser(PARSERS.rm, preserve_quotes=True)
