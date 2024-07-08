@@ -106,7 +106,8 @@ def cli_maintenance_token(
     if filter_kv_string:
         click.echo(
             click.style(
-                "Getting the maintenance tokens for all hosts that match the provided Falcon filters",
+                "Getting the maintenance tokens for all hosts that match the provided"
+                " Falcon filters",
                 fg="magenta",
                 bold=True,
             )
@@ -143,7 +144,8 @@ def cli_maintenance_token(
     elif device_id_file:
         click.echo(
             click.style(
-                "Getting the maintenance tokens for the devices identified by the IDs listed in a file",
+                "Getting the maintenance tokens for the devices identified by the IDs listed in a"
+                " file",
                 fg="magenta",
                 bold=True,
             )

@@ -37,4 +37,4 @@ jobs:
       if: success() || failure()
       run: poetry run pydocstyle falcon_toolkit/
     - name: Lint package with black
-      run: poetry run black -l 100 --check
+      run: poetry run black -l 100 --check falcon_toolkit/

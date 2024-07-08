@@ -93,7 +93,7 @@ def guard_rail_confirmation(device_count: int, action: str) -> bool:
             (True, f"Release {device_count} devices from network containment"),
         ]
         prompt_text = (
-            f"Are you sure you want to release {device_count} devices " "from network containment?"
+            f"Are you sure you want to release {device_count} devices from network containment?"
         )
 
     confirmation: bool = csradiolist_dialog(
