@@ -18,6 +18,7 @@ from typing import (
 
 if TYPE_CHECKING:
     from caracara import Client
+    from click import Context
 
 
 class AuthBackend(ABC):
@@ -51,7 +52,7 @@ class AuthBackend(ABC):
         """
 
     @abstractmethod
-    def authenticate(self) -> Client:
+    def authenticate(self, ctx: Context) -> Client:
         """Return a complete OAuth2 object, ready for use with FalconPy."""
 
     @abstractmethod

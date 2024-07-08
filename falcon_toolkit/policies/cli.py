@@ -57,7 +57,7 @@ def cli_policies(
 ):
     """Configure the future profiles commands by getting the context in shape."""
     instance = get_instance(ctx)
-    client: Client = instance.auth_backend.authenticate()
+    client: Client = instance.auth_backend.authenticate(ctx)
     ctx.obj["client"] = client
 
     if prevention_policies_option:

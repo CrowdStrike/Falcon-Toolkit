@@ -8,6 +8,7 @@ import os
 
 from typing import Dict, Optional
 
+import click
 import keyring
 
 from caracara import Client
@@ -94,15 +95,24 @@ class PublicCloudFlightControlParentCIDBackend(AuthBackend):
         keyring.
         """
         config: Dict[str, object] = {}
-        config["client_id"]: str = self.client_id
-        config["cloud_name"]: str = self.cloud_name
-        config["ssl_verify"]: bool = self.ssl_verify
-        config["proxy"]: Dict[str, str] = self.proxy
+        config["client_id"] = self.client_id
+        config["cloud_name"] = self.cloud_name
+        config["ssl_verify"] = self.ssl_verify
+        config["proxy"] = self.proxy
 
         return config
 
-    def authenticate(self) -> Client:
+    def authenticate(self, ctx: click.Context) -> Client:
         """Log the Toolkit into Falcon using the settings and keys configured at instance setup."""
+
+        # We allow loading of an MSSP CID from the environment
+        chosen_cid_str = os.environ.get("FALCON_TOOLKIT_MSSP_CHILD_CID")
+
+        # ...but the one passed on the CLI always takes precedence
+        chosen_cid_str_ctx = ctx.obj["cid"]
+        if chosen_cid_str_ctx:
+            chosen_cid_str = chosen_cid_str_ctx
+
         parent_client = Client(
             client_id=self.client_id,
             client_secret=self.client_secret,
@@ -111,18 +121,39 @@ class PublicCloudFlightControlParentCIDBackend(AuthBackend):
             proxy=self.proxy,
         )
         child_cids = parent_client.flight_control.get_child_cids()
-        chosen_cid_str = os.environ.get("FALCON_MSSP_CHILD_CID")
-        if chosen_cid_str and chosen_cid_str.lower() in child_cids:
-            chosen_cid = parent_client.flight_control.get_child_cid_data(cids=[chosen_cid_str])[
-                chosen_cid_str
-            ]
-        else:
-            child_cids_data = parent_client.flight_control.get_child_cid_data(cids=child_cids)
-            chosen_cid_str = choose_cid(cids=child_cids_data, prompt_text="MSSP Child CID Search")
-            chosen_cid = child_cids_data[chosen_cid_str]
 
-        chosen_cid_name = chosen_cid["name"]
-        print(f"Connecting to {chosen_cid_name}")
+        if chosen_cid_str and chosen_cid_str in child_cids:
+            click.echo(
+                click.style("Valid member CID ", fg="blue")
+                + click.style(chosen_cid_str, fg="blue", bold=True)
+                + click.style(" provided. Skipping CID selection.", fg="blue")
+            )
+        elif chosen_cid_str:
+            click.echo(click.style("An invalid CID was provided at the command line.", fg="red"))
+            click.echo("Please search for an alternative CID:")
+            # Blank out a bad value
+            chosen_cid_str = None
+
+        if not chosen_cid_str:
+            if chosen_cid_str and chosen_cid_str.lower() in child_cids:
+                chosen_cid = parent_client.flight_control.get_child_cid_data(
+                    cids=[chosen_cid_str],
+                )[chosen_cid_str]
+            else:
+                child_cids_data = parent_client.flight_control.get_child_cid_data(cids=child_cids)
+                if not child_cids_data:
+                    raise RuntimeError(
+                        "No child CIDs accessible. Please check your API credentials."
+                    )
+
+                chosen_cid_str = choose_cid(
+                    cids=child_cids_data,
+                    prompt_text="MSSP Child CID Search",
+                )
+                chosen_cid = child_cids_data[chosen_cid_str]
+
+            chosen_cid_name = chosen_cid["name"]
+            print(f"Connecting to {chosen_cid_name}")
 
         client = Client(
             client_id=self.client_id,

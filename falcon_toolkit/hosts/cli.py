@@ -55,7 +55,7 @@ def cli_host_search(
 ):
     """Implement the host_search CLI command."""
     instance = get_instance(ctx)
-    client = instance.auth_backend.authenticate()
+    client = instance.auth_backend.authenticate(ctx)
     filters = parse_cli_filters(filter_kv_strings, client)
 
     # Handle validation of the CSV export path here, before the search executes in host_search_cmd.
