@@ -59,26 +59,26 @@ from falcon_toolkit.shell.cli import cli_shell
 @click.group()
 @click.pass_context
 @click.option(
-    '-c',
-    '--config-path',
-    envvar='FALCON_TOOLKIT_CONFIG_DIR',
+    "-c",
+    "--config-path",
+    envvar="FALCON_TOOLKIT_CONFIG_DIR",
     type=click.STRING,
     default=DEFAULT_CONFIG_DIR,
     help="Path to the configuration directory (default: %userappdata%/FalconToolkit/)",
 )
 @click.option(
-    '-v',
-    '--verbose',
-    envvar='FALCON_TOOLKIT_VERBOSE',
+    "-v",
+    "--verbose",
+    envvar="FALCON_TOOLKIT_VERBOSE",
     type=click.BOOL,
     is_flag=True,
     default=False,
     help="Enable info-level logging at the CLI",
 )
 @click.option(
-    '-p',
-    '--profile',
-    envvar='FALCON_TOOLKIT_PROFILE',
+    "-p",
+    "--profile",
+    envvar="FALCON_TOOLKIT_PROFILE",
     type=click.STRING,
     default=None,
     help=(
@@ -123,18 +123,18 @@ def cli(
 
     # Configure context that can be passed down to other options
     ctx.ensure_object(dict)
-    click.echo(click.style("Falcon Toolkit", fg='blue', bold=True))
+    click.echo(click.style("Falcon Toolkit", fg="blue", bold=True))
     hyperlink = build_file_hyperlink(config_path, config_path, "falcon_config_path")
-    click.echo(click.style(f"Configuration Directory: {hyperlink}", fg='black'))
+    click.echo(click.style(f"Configuration Directory: {hyperlink}", fg="black"))
     if verbose:
         log_level = logging.INFO
     else:
         log_level = logging.CRITICAL
 
     if (
-        config_path == DEFAULT_CONFIG_DIR and
-        os.path.exists(OLD_DEFAULT_CONFIG_DIR) and
-        not os.path.exists(config_path)
+        config_path == DEFAULT_CONFIG_DIR
+        and os.path.exists(OLD_DEFAULT_CONFIG_DIR)
+        and not os.path.exists(config_path)
     ):
         # The user has used Falcon Toolkit before, and uses the default directory, so we
         # offer to move the configuration folder for them.
@@ -151,7 +151,7 @@ def cli(
             (
                 "COPY_CONFIG_ONLY",
                 f"create a new one at {config_path}, and copy my configuration file there",
-            )
+            ),
         ]
         choice = csradiolist_dialog(
             title="Falcon Toolkit Configuration Directory",
@@ -192,7 +192,7 @@ def cli(
     # Configure and load the configuration object
     configure_data_dir(config_path)
     config = FalconToolkitConfig(config_path=config_path)
-    ctx.obj['config'] = config
+    ctx.obj["config"] = config
 
     # Configure the logger
     log_path = os.path.join(config_path, LOG_SUB_DIR)
@@ -202,10 +202,10 @@ def cli(
         log_level=log_level,
         log_compression=True,
     )
-    ctx.obj['log_filename_base'] = log_filename_base
+    ctx.obj["log_filename_base"] = log_filename_base
 
     # Pass a profile name down the chain in case one is selected
-    ctx.obj['profile_name'] = profile
+    ctx.obj["profile_name"] = profile
 
 
 @cli.result_callback()
@@ -222,19 +222,19 @@ def cli_process_result(  # pylint: disable=unused-argument
 
 
 @cli.group(
-    help='Show, create and delete Falcon Toolkit connection profiles',
+    help="Show, create and delete Falcon Toolkit connection profiles",
 )
 def profiles():
     """Root command group to handle connection profiles."""
 
 
 @profiles.command(
-    name='delete',
+    name="delete",
     help="Delete a Falcon connection profile.",
 )
 @click.pass_context
 @click.argument(
-    'profile_name',
+    "profile_name",
     type=click.STRING,
 )
 def profiles_delete(
@@ -243,40 +243,40 @@ def profiles_delete(
 ):
     """Delete a connection profile."""
     click.echo(f"Deleting {profile_name}")
-    config: FalconToolkitConfig = ctx.obj['config']
+    config: FalconToolkitConfig = ctx.obj["config"]
     config.remove_instance(profile_name)
 
 
 @profiles.command(
-    name='list',
+    name="list",
     help="List Falcon connection profiles.",
 )
 @click.pass_context
 def profiles_list(ctx: click.Context):
     """Show all connection profiles that exist within the current configuration."""
-    config: FalconToolkitConfig = ctx.obj['config']
+    config: FalconToolkitConfig = ctx.obj["config"]
     config.list_instances()
 
 
 @profiles.command(
-    name='new',
+    name="new",
     help="Create a new Falcon connection profile.",
 )
 @click.pass_context
 def profiles_new(ctx: click.Context):
     """Create a new profile, based on all loaded authentication backends."""
     click.echo("New profile")
-    config: FalconToolkitConfig = ctx.obj['config']
+    config: FalconToolkitConfig = ctx.obj["config"]
     config.add_instance()
 
 
 @click.command(
-    name='filters',
-    help='Get information on available filters',
+    name="filters",
+    help="Get information on available filters",
 )
 def cli_list_filters():
     """List all possible filters out on screen based on data available within Caracara."""
-    host_filters: dict = DIALECTS['hosts']
+    host_filters: dict = DIALECTS["hosts"]
 
     # We have some duplicate filters with an underscore added for FQL compatability
     unique_filters = set()
@@ -286,8 +286,8 @@ def cli_list_filters():
     unique_filters = sorted(list(unique_filters))
 
     for unique_filter_name in unique_filters:
-        click.echo(click.style(unique_filter_name, fg='blue', bold=True))
-        click.echo(host_filters[unique_filter_name]['help'])
+        click.echo(click.style(unique_filter_name, fg="blue", bold=True))
+        click.echo(host_filters[unique_filter_name]["help"])
         click.echo()
 
 

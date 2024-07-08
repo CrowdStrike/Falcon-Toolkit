@@ -3,6 +3,7 @@
 This authentication backend can take public cloud API keys (US-1, US-2, EU-1), and will return
 an OAuth2 object suitable for authenticating with FalconPy.
 """
+
 from typing import Dict, Optional
 
 import keyring
@@ -81,10 +82,10 @@ class PublicCloudSingleCIDBackend(AuthBackend):
         keyring.
         """
         config: Dict[str, object] = {}
-        config['client_id'] = self.client_id
-        config['cloud_name'] = self.cloud_name
-        config['ssl_verify'] = self.ssl_verify
-        config['proxy'] = self.proxy
+        config["client_id"] = self.client_id
+        config["cloud_name"] = self.cloud_name
+        config["ssl_verify"] = self.ssl_verify
+        config["proxy"] = self.proxy
 
         return config
 

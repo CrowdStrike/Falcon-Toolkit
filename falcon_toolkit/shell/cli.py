@@ -3,6 +3,7 @@
 This file contains the CLI options for the shell command, which allows a user to invoke a batch
 RTR shell with many connected systems at once.
 """
+
 import logging
 import logging.handlers
 import sys
@@ -26,26 +27,26 @@ from falcon_toolkit.shell.prompt import RTRPrompt
 
 
 @click.command(
-    name='shell',
-    help='Create a Real Time Response batch shell',
+    name="shell",
+    help="Create a Real Time Response batch shell",
 )
 @click.pass_context
 @optgroup.group(
     "Specify devices",
     cls=MutuallyExclusiveOptionGroup,
-    help="Choose no more than one method to choose systems to connect to"
+    help="Choose no more than one method to choose systems to connect to",
 )
 @optgroup.option(
-    '-d',
-    '--device-id-list',
-    'device_id_list',
+    "-d",
+    "--device-id-list",
+    "device_id_list",
     type=click.STRING,
     help="Specify a list of Device IDs (AIDs) to connect to, comma delimited",
 )
 @optgroup.option(
-    '-df',
-    '--device-id-file',
-    'device_id_file',
+    "-df",
+    "--device-id-file",
+    "device_id_file",
     type=click.STRING,
     help=(
         "Specify a list of Device IDs (AIDs) to connect to in an external file, one per line; "
@@ -53,29 +54,29 @@ from falcon_toolkit.shell.prompt import RTRPrompt
     ),
 )
 @optgroup.option(
-    '-f',
-    '--filter',
-    'filter_kv_strings',
+    "-f",
+    "--filter",
+    "filter_kv_strings",
     type=click.STRING,
     multiple=True,
     help="Filter hosts to connect to based on standard Falcon filters",
 )
 @optgroup.group(
     "RTR Connection Options",
-    help="General connection options for the Real Time Response (RTR) batch session."
+    help="General connection options for the Real Time Response (RTR) batch session.",
 )
 @optgroup.option(
-    '-q',
-    '--queueing',
+    "-q",
+    "--queueing",
     type=click.BOOL,
     is_flag=True,
     default=False,
     help="Enable RTR Queueing  (default: off)",
 )
 @optgroup.option(
-    '-s',
-    '--script',
-    'startup_script',
+    "-s",
+    "--script",
+    "startup_script",
     required=False,
     type=click.STRING,
     help=(
@@ -86,8 +87,8 @@ from falcon_toolkit.shell.prompt import RTRPrompt
     ),
 )
 @optgroup.option(
-    '-t',
-    '--timeout',
+    "-t",
+    "--timeout",
     type=click.INT,
     default=30,
     required=False,
@@ -128,11 +129,13 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
     online_string = "" if queueing else "online "
 
     if filter_kv_strings:
-        click.echo(click.style(
-            "Connecting to all hosts that match the provided Falcon filters",
-            fg='magenta',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "Connecting to all hosts that match the provided Falcon filters",
+                fg="magenta",
+                bold=True,
+            )
+        )
         logging.info("Connecting to all hosts that match the provided Falcon filters")
 
         filters = parse_cli_filters(filter_kv_strings, client).get_fql()
@@ -142,11 +145,13 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
 
         device_ids = client.hosts.get_device_ids(filters=filters, online_state=online_state)
     elif device_id_list:
-        click.echo(click.style(
-            "Connecting to the device IDs provided on the command line",
-            fg='magenta',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "Connecting to the device IDs provided on the command line",
+                fg="magenta",
+                bold=True,
+            )
+        )
         logging.info("Connecting to the device IDs provided on the command line")
 
         device_ids = set()
@@ -160,16 +165,18 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
             online_state=online_state,
         )
     elif device_id_file:
-        click.echo(click.style(
-            "Connecting to the device IDs listed in a file",
-            fg='magenta',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                "Connecting to the device IDs listed in a file",
+                fg="magenta",
+                bold=True,
+            )
+        )
         click.echo(click.style("File path: ", bold=True), nl=False)
         click.echo(device_id_file)
         logging.info("Connecting to the device IDs listed in %s", device_id_file)
 
-        with open(device_id_file, 'rt', encoding='ascii') as device_id_file_handle:
+        with open(device_id_file, "rt", encoding="ascii") as device_id_file_handle:
             device_ids = set()
             for line in device_id_file_handle:
                 line = line.strip()
@@ -180,19 +187,23 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
                 online_state=online_state,
             )
     else:
-        click.echo(click.style(
-            f"WARNING: Connecting to all {online_string}hosts in the Falcon instance",
-            fg='yellow',
-        ))
+        click.echo(
+            click.style(
+                f"WARNING: Connecting to all {online_string}hosts in the Falcon instance",
+                fg="yellow",
+            )
+        )
         logging.info("Connecting to all %shosts in the Falcon instance", online_string)
         device_ids = client.hosts.get_device_ids(online_state=online_state)
 
     if not device_ids:
-        click.echo(click.style(
-            f"No {online_string}devices match the provided filters",
-            fg='red',
-            bold=True,
-        ))
+        click.echo(
+            click.style(
+                f"No {online_string}devices match the provided filters",
+                fg="red",
+                bold=True,
+            )
+        )
         sys.exit(1)
 
     device_count = len(device_ids)
@@ -200,7 +211,7 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
     logging.info("Connecting to %d device(s)", device_count)
     logging.debug(device_ids)
 
-    log_filename_base = ctx.obj['log_filename_base']
+    log_filename_base = ctx.obj["log_filename_base"]
     csv_filename = f"{log_filename_base}.csv"
 
     prompt = RTRPrompt(

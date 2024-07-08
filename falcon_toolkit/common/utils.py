@@ -3,6 +3,7 @@
 This file is a catch-all for small code snippets that can be shared across the various sub-modules
 of the application.
 """
+
 import os
 
 from typing import Dict, Iterable
@@ -21,8 +22,7 @@ from falcon_toolkit.common.constants import LOG_SUB_DIR
 def fancy_input(prompt_text: str, loop: bool = True):
     """Request user input (with colour). Optionally loop until the input is not blank."""
     inputted = False
-    colour_prompt = Style.BRIGHT + Fore.BLUE + \
-        prompt_text + Fore.RESET + Style.RESET_ALL
+    colour_prompt = Style.BRIGHT + Fore.BLUE + prompt_text + Fore.RESET + Style.RESET_ALL
 
     while not inputted:
         data = input(colour_prompt)
@@ -62,11 +62,11 @@ def filename_safe_string(unsafe_string: str) -> str:
     This function is heavily inspired by https://stackoverflow.com/a/7406369.
     """
     safe_string = "".join(
-        [c for c in unsafe_string if c.isalpha() or c.isdigit() or c == ' ']
+        [c for c in unsafe_string if c.isalpha() or c.isdigit() or c == " "]
     ).rstrip()
 
     # Replace spaces with underscores to match the general format of the log filename
-    clean_string = safe_string.replace(' ', '_')
+    clean_string = safe_string.replace(" ", "_")
 
     return clean_string
 

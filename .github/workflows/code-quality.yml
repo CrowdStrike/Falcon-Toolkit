@@ -36,3 +36,5 @@ jobs:
     - name: Lint package docstrings and comments with pydocstyle
       if: success() || failure()
       run: poetry run pydocstyle falcon_toolkit/
+    - name: Lint package with black
+      run: poetry run black -l 100 --check falcon_toolkit/

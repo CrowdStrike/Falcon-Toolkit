@@ -2,6 +2,7 @@
 
 This file contains helper functions for the main shell.
 """
+
 import os
 
 from caracara.modules.rtr import GetFile
@@ -18,6 +19,6 @@ def output_file_name(get_file: GetFile, hostname: str):
 
     filename_noext, ext = os.path.splitext(filename)
 
-    final_filename = f'{filename_noext}_{hostname}_{get_file.device_id}_{get_file.sha256}{ext}'
+    final_filename = f"{filename_noext}_{hostname}_{get_file.device_id}_{get_file.sha256}{ext}"
 
     return final_filename

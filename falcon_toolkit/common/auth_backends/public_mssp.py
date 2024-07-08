@@ -3,6 +3,7 @@
 This authentication backend can take public cloud API keys (US-1, US-2, EU-1), and will ask the
 user which child CID to authenticate against.
 """
+
 import os
 
 from typing import Dict, Optional
@@ -93,10 +94,10 @@ class PublicCloudFlightControlParentCIDBackend(AuthBackend):
         keyring.
         """
         config: Dict[str, object] = {}
-        config['client_id']: str = self.client_id
-        config['cloud_name']: str = self.cloud_name
-        config['ssl_verify']: bool = self.ssl_verify
-        config['proxy']: Dict[str, str] = self.proxy
+        config["client_id"]: str = self.client_id
+        config["cloud_name"]: str = self.cloud_name
+        config["ssl_verify"]: bool = self.ssl_verify
+        config["proxy"]: Dict[str, str] = self.proxy
 
         return config
 
@@ -112,18 +113,15 @@ class PublicCloudFlightControlParentCIDBackend(AuthBackend):
         child_cids = parent_client.flight_control.get_child_cids()
         chosen_cid_str = os.environ.get("FALCON_MSSP_CHILD_CID")
         if chosen_cid_str and chosen_cid_str.lower() in child_cids:
-            chosen_cid = parent_client.flight_control.get_child_cid_data(
-                cids=[chosen_cid_str]
-            )[chosen_cid_str]
+            chosen_cid = parent_client.flight_control.get_child_cid_data(cids=[chosen_cid_str])[
+                chosen_cid_str
+            ]
         else:
             child_cids_data = parent_client.flight_control.get_child_cid_data(cids=child_cids)
-            chosen_cid_str = choose_cid(
-                cids=child_cids_data,
-                prompt_text="MSSP Child CID Search"
-            )
+            chosen_cid_str = choose_cid(cids=child_cids_data, prompt_text="MSSP Child CID Search")
             chosen_cid = child_cids_data[chosen_cid_str]
 
-        chosen_cid_name = chosen_cid['name']
+        chosen_cid_name = chosen_cid["name"]
         print(f"Connecting to {chosen_cid_name}")
 
         client = Client(

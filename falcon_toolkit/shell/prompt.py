@@ -3,6 +3,7 @@
 This file contains the bulk of the code that implements the RTR batch shell. It is configured, and
 in turn instantiated and invoked, by the code within shell/cli.py.
 """
+
 import concurrent.futures
 import csv
 import os
@@ -102,7 +103,7 @@ class RTRPrompt(Cmd):
         self.queueing = queueing
         self.add_settable(
             Settable(
-                'queueing',
+                "queueing",
                 bool,
                 "RTR Command Queueing (True or False)",
                 self,
@@ -114,7 +115,7 @@ class RTRPrompt(Cmd):
         self.timeout = timeout
         self.add_settable(
             Settable(
-                'timeout',
+                "timeout",
                 int,
                 "RTR Command Timeout (seconds)",
                 self,
@@ -135,7 +136,7 @@ class RTRPrompt(Cmd):
             put_files = self.client.rtr.describe_put_files()
             put_file_names = []
             for put_file_id in put_files.keys():
-                put_file_names.append(put_files[put_file_id]['name'])
+                put_file_names.append(put_files[put_file_id]["name"])
             PUT_FILE_CHOICES.clear()
             PUT_FILE_CHOICES.extend(sorted(put_file_names))
 
@@ -147,7 +148,7 @@ class RTRPrompt(Cmd):
             custom_scripts = self.client.rtr.describe_scripts()
             script_names = []
             for script_id in custom_scripts.keys():
-                script_names.append(custom_scripts[script_id]['name'])
+                script_names.append(custom_scripts[script_id]["name"])
             CLOUD_SCRIPT_CHOICES.clear()
             CLOUD_SCRIPT_CHOICES.extend(sorted(script_names))
 
@@ -185,19 +186,21 @@ class RTRPrompt(Cmd):
 
         # Identify how many systems actually connected properly based on the 'complete' result
         self.successful_device_connections = sum(
-            ('complete' in x and x['complete'] is True) or
-            ('offline_queued' in x and x['offline_queued'] is True)
+            ("complete" in x and x["complete"] is True)
+            or ("offline_queued" in x and x["offline_queued"] is True)
             for x in self.connected_devices.values()
         )
 
         # Bail out if no devices connected, since this shell will be useless
         if self.successful_device_connections == 0:
-            click.echo(click.style(
-                "No devices connected successfully. "
-                "If this is unexpected, please check the log file.",
-                fg="red",
-                bold=True,
-            ))
+            click.echo(
+                click.style(
+                    "No devices connected successfully. "
+                    "If this is unexpected, please check the log file.",
+                    fg="red",
+                    bold=True,
+                )
+            )
             sys.exit(1)
 
         # Figure out whether the prompt should show a *nix/macOS or Windows prompt, and set this up
@@ -208,15 +211,15 @@ class RTRPrompt(Cmd):
         self.csv_output_file = csv_output_file
 
         # pylint: disable=consider-using-with
-        self.csv_file_handle = open(csv_output_file, 'w', newline='', encoding='utf-8')
+        self.csv_file_handle = open(csv_output_file, "w", newline="", encoding="utf-8")
         fieldnames = [
-            'n',
-            'command',
-            'aid',
-            'hostname',
-            'complete',
-            'stdout',
-            'stderr',
+            "n",
+            "command",
+            "aid",
+            "hostname",
+            "complete",
+            "stdout",
+            "stderr",
         ]
         self.csv_writer = csv.DictWriter(
             self.csv_file_handle,
@@ -250,20 +253,20 @@ class RTRPrompt(Cmd):
         """
         first_queued_root_path = None
         for device in self.connected_devices.values():
-            if device['offline_queued']:
+            if device["offline_queued"]:
                 # Queued (offline) hosts will not give us a prompt in stdout
                 # Skip, and hope that another host is online
                 if not first_queued_root_path:
                     first_queued_root_path = "/"
-                    device_id = device['aid']
-                    if self.device_data[device_id]['platform_name'] == 'Windows':
+                    device_id = device["aid"]
+                    if self.device_data[device_id]["platform_name"] == "Windows":
                         first_queued_root_path = "C:\\"
                 continue
 
-            if 'base_command' in device and device['base_command'] == 'pwd':
+            if "base_command" in device and device["base_command"] == "pwd":
                 # On initial connection, the pwd pseudo-command will be run
                 # to reset the path back to the root and echo it to stdout
-                stdout = device['stdout']
+                stdout = device["stdout"]
                 return stdout
 
             # Something weird has happened in this case, so just return an OS-dependant root
@@ -277,8 +280,8 @@ class RTRPrompt(Cmd):
         # If none of the devices have given us a useful value, just return an OS-dependent root path
         # The iteration trick avoids iterating over the whole dictionary again
         first_device = next(iter(self.connected_devices.items()))[1]
-        first_device_id = first_device['aid']
-        if self.device_data[first_device_id]['platform_name'] == "Windows":
+        first_device_id = first_device["aid"]
+        if self.device_data[first_device_id]["platform_name"] == "Windows":
             return "C:\\"
 
         # If all else fails, just return a *nix /
@@ -287,7 +290,7 @@ class RTRPrompt(Cmd):
     def _set_prompt(self, prompt: str):
         """Set the prompt to a command-line style prompt, corrected based on the likely platform."""
         prompt_character = ">" if ":\\" in prompt else " #"
-        self.prompt = f'{Style.DIM}{Fore.WHITE}{prompt}{prompt_character} {Style.RESET_ALL}'
+        self.prompt = f"{Style.DIM}{Fore.WHITE}{prompt}{prompt_character} {Style.RESET_ALL}"
 
     def _onchange_timeout(self, param_name, old, new):
         """Handle when the timeout parameter is changed."""
@@ -305,9 +308,7 @@ class RTRPrompt(Cmd):
         else:
             self.queueing = new
             self.batch_session.connect(
-                device_ids=self.device_ids,
-                queueing=self.queueing,
-                timeout=self.timeout
+                device_ids=self.device_ids, queueing=self.queueing, timeout=self.timeout
             )
             root_path = self._derive_root_path()
             self._set_prompt(root_path)
@@ -387,24 +388,17 @@ class RTRPrompt(Cmd):
 
         return get_file_data
 
-    def write_result_row(
-        self,
-        command: str,
-        aid: str,
-        complete: bool,
-        stdout: str,
-        stderr: str
-    ):
+    def write_result_row(self, command: str, aid: str, complete: bool, stdout: str, stderr: str):
         """Write a row of output to the CSV log file."""
         hostname = self.device_data[aid].get("hostname", "<NO HOSTNAME>")
         row = {
-            'n': self.output_line_n,
-            'command': command,
-            'aid': aid,
-            'hostname': hostname,
-            'complete': complete,
-            'stdout': stdout,
-            'stderr': stderr,
+            "n": self.output_line_n,
+            "command": command,
+            "aid": aid,
+            "hostname": hostname,
+            "complete": complete,
+            "stdout": stdout,
+            "stderr": stderr,
         }
         self.csv_writer.writerow(row)
         self.output_line_n += 1
@@ -435,9 +429,9 @@ class RTRPrompt(Cmd):
         outputs: Optional[Tuple[Optional[str], Optional[str]]] = None
         error_msg_set = set()
         for aid, batch_result in batch_results.items():
-            complete = batch_result['complete']
-            stdout = batch_result['stdout']
-            stderr = batch_result['stderr']
+            complete = batch_result["complete"]
+            stdout = batch_result["stdout"]
+            stderr = batch_result["stderr"]
             self.write_result_row(
                 command=command,
                 aid=aid,
@@ -453,28 +447,27 @@ class RTRPrompt(Cmd):
 
             if not printed_first:
                 hostname = self.device_data[aid].get("hostname", "<NO HOSTNAME>")
-                self.poutput(f'{hostname}: {stdout}')
-                self.perror(f'{Fore.RED}{hostname}: {stderr}{Fore.RESET}')
+                self.poutput(f"{hostname}: {stdout}")
+                self.perror(f"{Fore.RED}{hostname}: {stderr}{Fore.RESET}")
 
                 printed_first = True
 
-            if 'errors' in batch_result and batch_result['errors']:
-                error_msg_set.add(batch_result['errors'][0]['message'])
+            if "errors" in batch_result and batch_result["errors"]:
+                error_msg_set.add(batch_result["errors"][0]["message"])
 
         if batch_result_count > 1:
             self.poutput(
-                f'(Output from the remaining {batch_result_count - 1} '
-                'host(s) was written to the CSV output file)'
+                f"(Output from the remaining {batch_result_count - 1} "
+                "host(s) was written to the CSV output file)"
             )
 
         if error_msg_set:
             self.poutput(
-                Fore.RED +
-                "At least one error was detected. Check the log file for full details."
+                Fore.RED + "At least one error was detected. Check the log file for full details."
             )
             self.poutput(Fore.WHITE + "List of errors detected:")
             for err in error_msg_set:
-                self.poutput(f'-> {Style.DIM}{err}')
+                self.poutput(f"-> {Style.DIM}{err}")
 
         if outputs is None:
             return (None, None)
@@ -488,15 +481,15 @@ class RTRPrompt(Cmd):
     def do_cat(self, args):
         """Read a file from disk and display as ASCII or hex."""
         if args.show_hex:
-            command = f'cat {args.file} -ShowHex'
+            command = f"cat {args.file} -ShowHex"
         else:
-            command = f'cat {args.file}'
+            command = f"cat {args.file}"
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.cd, preserve_quotes=True)
     def do_cd(self, args):
         """Change the current working directory."""
-        command = f'cd {args.directory}'
+        command = f"cd {args.directory}"
         new_directory, _ = self.send_generic_command(command)
 
         # Handle the case when no valid directory is returned
@@ -509,34 +502,31 @@ class RTRPrompt(Cmd):
         scripts = self.client.rtr.query_scripts()
         sorted_scripts = sorted(
             scripts.items(),
-            key=lambda x: x[1]['name'],
+            key=lambda x: x[1]["name"],
         )
 
-        if args.script_name:
-            found_script = False
+        found_script = False
 
         # Since we've made this API call, we might as well update the
         # choices for the parser, too.
         CLOUD_SCRIPT_CHOICES.clear()
         for script in sorted_scripts:
             script = script[1]
-            CLOUD_SCRIPT_CHOICES.append(script['name'])
+            CLOUD_SCRIPT_CHOICES.append(script["name"])
 
             # Only show script information if the name matches
             # what was requested by the user
             if args.script_name:
-                if script['name'] == args.script_name:
+                if script["name"] == args.script_name:
                     found_script = True
                 else:
                     continue
 
-            self.poutput(
-                Style.BRIGHT + Fore.BLUE + script['name'] + Style.RESET_ALL
-            )
+            self.poutput(Style.BRIGHT + Fore.BLUE + script["name"] + Style.RESET_ALL)
 
             creator_length = max(
-                len(script['created_by']),
-                len(script['modified_by']),
+                len(script["created_by"]),
+                len(script["modified_by"]),
             )
             self.poutput(
                 f"{Style.BRIGHT}created by:  {Fore.RED}"
@@ -552,16 +542,13 @@ class RTRPrompt(Cmd):
             )
 
             self.poutput(
-                Style.BRIGHT + "Script length: " + Style.RESET_ALL +
-                str(script['size']) + " bytes"
+                Style.BRIGHT + "Script length: " + Style.RESET_ALL + str(script["size"]) + " bytes"
             )
-            if 'description' in script:
-                self.poutput(
-                    Style.RESET_ALL + script['description']
-                )
+            if "description" in script:
+                self.poutput(Style.RESET_ALL + script["description"])
 
             if args.show_content:
-                self.poutput(Fore.CYAN + script['content'] + Style.RESET_ALL)
+                self.poutput(Fore.CYAN + script["content"] + Style.RESET_ALL)
 
             self.poutput()
 
@@ -571,7 +558,7 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.cp, preserve_quotes=True)
     def do_cp(self, args):
         """Copy a file or directory."""
-        command = f'cp {args.source} {args.destination}'
+        command = f"cp {args.source} {args.destination}"
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.csrutil, preserve_quotes=True)
@@ -588,9 +575,9 @@ class RTRPrompt(Cmd):
     def do_encrypt(self, args):
         """Encrypt a file with AES-256."""
         if args.key:
-            command = f'encrypt {args.path} {args.key}'
+            command = f"encrypt {args.path} {args.key}"
         else:
-            command = f'encrypt {args.path}'
+            command = f"encrypt {args.path}"
 
         self.send_generic_command(command)
 
@@ -603,31 +590,30 @@ class RTRPrompt(Cmd):
     def do_eventlog(self, args):
         """[Windows] Inspect event logs. Subcommands: backup, export, list, view."""
         if args.command_name == "backup":
-            command = f'eventlog backup {args.name} {args.filename}'
+            command = f"eventlog backup {args.name} {args.filename}"
         elif args.command_name == "export":
-            command = f'eventlog export {args.name} {args.filename}'
+            command = f"eventlog export {args.name} {args.filename}"
         elif args.command_name == "list":
-            command = 'eventlog list'
+            command = "eventlog list"
         elif args.command_name == "view":
             if args.source_name and not args.count:
                 self.perror(
-                    Fore.RED +
-                    "You must specify an event count if you specify a "
+                    Fore.RED + "You must specify an event count if you specify a "
                     "source name. This is for RTR reasons."
                 )
                 return
-            command = f'eventlog view {args.name}'
+            command = f"eventlog view {args.name}"
             if args.count:
-                command = f'{command} {args.count}'
+                command = f"{command} {args.count}"
             if args.source_name:
-                command = f'{command} {args.source_name}'
+                command = f"{command} {args.source_name}"
 
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.filehash, preserve_quotes=True)
     def do_filehash(self, args):
         """Generate the MD5, SHA1, and SHA256 hashes of a file."""
-        command = f'filehash {args.file}'
+        command = f"filehash {args.file}"
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.get, preserve_quotes=True)
@@ -661,13 +647,13 @@ class RTRPrompt(Cmd):
         self.last_batch_get_completed_uploads = 0
         for host_id, get_data in resources.items():
             # If the command could be sent to the host, it is complete
-            complete = get_data['complete']
+            complete = get_data["complete"]
             # stdout from a get shows the name of the file to be uploaded
-            stdout = get_data['stdout']
+            stdout = get_data["stdout"]
             # stderr will show us if this failed, and why
-            stderr = get_data['stderr']
+            stderr = get_data["stderr"]
             # See if the request was queued for the future
-            queued = get_data['offline_queued']
+            queued = get_data["offline_queued"]
 
             # All successful requests print the filename to stdout and stderr is left empty.
             # We also only count a successful result if it is not queued.
@@ -695,14 +681,13 @@ class RTRPrompt(Cmd):
             get_file_data = self._search_get_files(self.last_batch_get_cmd_req_ids)
         else:
             self.poutput(
-                Fore.RED +
-                "You must execute a batch get command first, or supply a "
+                Fore.RED + "You must execute a batch get command first, or supply a "
                 "batch get request ID"
             )
             return
 
         if not get_file_data:
-            self.poutput(f'{Fore.YELLOW}No GET files in that batch have been uploaded.{Fore.RESET}')
+            self.poutput(f"{Fore.YELLOW}No GET files in that batch have been uploaded.{Fore.RESET}")
 
     @with_argparser(PARSERS.download, preserve_quotes=False)
     def do_download(self, args):
@@ -717,16 +702,15 @@ class RTRPrompt(Cmd):
             get_file_data = self._search_get_files(self.last_batch_get_cmd_req_ids)
         else:
             self.poutput(
-                Fore.RED +
-                "You must execute a batch get command first, or supply a "
+                Fore.RED + "You must execute a batch get command first, or supply a "
                 "batch get request ID"
             )
             return
 
         if not get_file_data:
             self.poutput(
-                f'{Fore.YELLOW}No GET files in that batch are available '
-                f'for download yet.{Fore.RESET}'
+                f"{Fore.YELLOW}No GET files in that batch are available "
+                f"for download yet.{Fore.RESET}"
             )
             return
 
@@ -776,26 +760,26 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.ls, preserve_quotes=True)
     def do_ls(self, args):
         """Display the contents of the specified path."""
-        command = f'ls {args.directory}'
+        command = f"ls {args.directory}"
 
         if args.long_format:
-            command += ' -l'
+            command += " -l"
 
         if args.follow_symlinks:
-            command += ' -L'
+            command += " -L"
 
         if args.recursive:
-            command += ' -R'
+            command += " -R"
 
         if args.sort_time_modified:
-            command += ' -T'
+            command += " -T"
 
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.kill, preserve_quotes=True)
     def do_kill(self, args):
         """Kill a process."""
-        command = f'kill {args.pid}'
+        command = f"kill {args.pid}"
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.map, preserve_quotes=True)
@@ -808,16 +792,16 @@ class RTRPrompt(Cmd):
     def do_memdump(self, args):
         """[Windows] Dump the memory of a process."""
         if args.filename:
-            command = f'memdump {args.pid} {args.filename}'
+            command = f"memdump {args.pid} {args.filename}"
         else:
-            command = f'memdump {args.pid}'
+            command = f"memdump {args.pid}"
 
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.mkdir, preserve_quotes=True)
     def do_mkdir(self, args):
         """Create a new directory."""
-        command = f'mkdir {args.directory}'
+        command = f"mkdir {args.directory}"
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.mount, preserve_quotes=True)
@@ -828,7 +812,7 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.mv, preserve_quotes=True)
     def do_mv(self, args):
         """Move a file or directory."""
-        command = f'mv {args.source} {args.destination}'
+        command = f"mv {args.source} {args.destination}"
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.netstat, preserve_quotes=True)
@@ -849,13 +833,13 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.put, preserve_quotes=True)
     def do_put(self, args):
         """Put a file from the CrowdStrike cloud onto the machine."""
-        command = f'put {args.file}'
+        command = f"put {args.file}"
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.put_and_run, preserve_quotes=True)
     def do_put_and_run(self, args):
         """[Windows] Download and immediately execute a file from the CrowdStrike Cloud."""
-        command = f'put-and-run {args.file}'
+        command = f"put-and-run {args.file}"
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.put_files, preserve_quotes=False)
@@ -864,20 +848,18 @@ class RTRPrompt(Cmd):
         put_files = self.client.rtr.describe_put_files()
         sorted_put_files = sorted(
             put_files.items(),
-            key=lambda x: x[1]['name'],
+            key=lambda x: x[1]["name"],
         )
         # Since we've made this API call, we might as well update the
         # choices for the parser, too.
         PUT_FILE_CHOICES.clear()
         for put_file in sorted_put_files:
             put_file = put_file[1]
-            self.poutput(
-                Style.BRIGHT + Fore.BLUE + put_file['name'] + Style.RESET_ALL
-            )
-            PUT_FILE_CHOICES.append(put_file['name'])
+            self.poutput(Style.BRIGHT + Fore.BLUE + put_file["name"] + Style.RESET_ALL)
+            PUT_FILE_CHOICES.append(put_file["name"])
             creator_length = max(
-                len(put_file['created_by']),
-                len(put_file['modified_by']),
+                len(put_file["created_by"]),
+                len(put_file["modified_by"]),
             )
             self.poutput(
                 f"{Style.BRIGHT}created by:  {Fore.RED}"
@@ -893,13 +875,10 @@ class RTRPrompt(Cmd):
             )
 
             self.poutput(
-                Style.BRIGHT + "File Size: " + Style.RESET_ALL +
-                str(put_file['size']) + " bytes"
+                Style.BRIGHT + "File Size: " + Style.RESET_ALL + str(put_file["size"]) + " bytes"
             )
-            if 'description' in put_file:
-                self.poutput(
-                    Style.RESET_ALL + put_file['description']
-                )
+            if "description" in put_file:
+                self.poutput(Style.RESET_ALL + put_file["description"])
             self.poutput()
 
     @with_argparser(PARSERS.reg, preserve_quotes=True)
@@ -920,18 +899,16 @@ class RTRPrompt(Cmd):
             self.send_generic_command("restart -Confirm")
         else:
             self.poutput(
-                Fore.YELLOW +
-                "You must confirm a restart with -Confirm. "
-                "No action was taken."
+                Fore.YELLOW + "You must confirm a restart with -Confirm. No action was taken."
             )
 
     @with_argparser(PARSERS.rm, preserve_quotes=True)
     def do_rm(self, args):
         """Remove (delete) a file or directory."""
         if args.force:
-            command = f'rm {args.path} -Force'
+            command = f"rm {args.path} -Force"
         else:
-            command = f'rm {args.path}'
+            command = f"rm {args.path}"
 
         self.send_generic_command(command)
 
@@ -941,10 +918,10 @@ class RTRPrompt(Cmd):
         command = f'run "{args.executable}"'
 
         if args.command_line_args:
-            command = f'{command} -CommandLine=```{args.command_line_args}```'
+            command = f"{command} -CommandLine=```{args.command_line_args}```"
 
         if args.wait:
-            command = f'{command} -Wait'
+            command = f"{command} -Wait"
 
         self.send_generic_command(command)
 
@@ -953,24 +930,18 @@ class RTRPrompt(Cmd):
         """Run a PowerShell script."""
         # Handle Cloud Files first
         if args.cloud_file:
-            command = f"runscript -CloudFile=\"{args.cloud_file}\""
+            command = f'runscript -CloudFile="{args.cloud_file}"'
         elif args.host_path:
-            command = f"runscript -HostPath=\"{args.host_path}\""
+            command = f'runscript -HostPath="{args.host_path}"'
         elif args.raw_script:
             command = f"runscript -Raw=```{args.raw_script}```"
         elif args.workstation_path:
-            if (
-                os.path.exists(args.workstation_path) and
-                os.path.isfile(args.workstation_path)
-            ):
-                with open(args.workstation_path, 'rt', encoding='utf8') as script_file_handle:
+            if os.path.exists(args.workstation_path) and os.path.isfile(args.workstation_path):
+                with open(args.workstation_path, "rt", encoding="utf8") as script_file_handle:
                     contents = script_file_handle.read()
                 command = f"runscript -Raw=```{contents}```"
             else:
-                self.poutput(
-                    f"{args.workstation_path} could not be found; "
-                    "command aborted."
-                )
+                self.poutput(f"{args.workstation_path} could not be found; command aborted.")
                 return
 
         if args.command_line_args:
@@ -988,9 +959,7 @@ class RTRPrompt(Cmd):
             self.send_generic_command("shutdown -Confirm")
         else:
             self.poutput(
-                Fore.YELLOW +
-                "You must confirm a shutdown with -Confirm. "
-                "No action was taken."
+                Fore.YELLOW + "You must confirm a shutdown with -Confirm. No action was taken."
             )
 
     @with_argparser(PARSERS.tar, preserve_quotes=True)
@@ -1019,20 +988,20 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.unmap, preserve_quotes=True)
     def do_unmap(self, args):
         """Unmap an SMB (network) share drive."""
-        command = f'unmap {args.drive_letter}'
+        command = f"unmap {args.drive_letter}"
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.update, preserve_quotes=True)
     def do_update(self, args):
         """[Windows] Windows update manipulation. Subcommands: history, install, list, query."""
         if args.command_name == "history":
-            command = 'update history'
+            command = "update history"
         elif args.command_name == "install":
-            command = f'update install {args.kb}'
+            command = f"update install {args.kb}"
         elif args.command_name == "list":
-            command = 'update list'
+            command = "update list"
         elif args.command_name == "query":
-            command = f'update query {args.kb}'
+            command = f"update query {args.kb}"
         else:
             self.poutput("Incorrect mode specified")
             return
@@ -1043,14 +1012,14 @@ class RTRPrompt(Cmd):
     def do_xmemdump(self, args):
         """Dump the complete or kernel memory of the target systems."""
         if args.destination:
-            command = f'xmemdump {args.mode} {args.destination}'
+            command = f"xmemdump {args.mode} {args.destination}"
         else:
-            command = f'xmemdump {args.mode}'
+            command = f"xmemdump {args.mode}"
 
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.zip, preserve_quotes=True)
     def do_zip(self, args):
         """Compress a file or directory into a zip file."""
-        command = f'zip {args.source} {args.destination}'
+        command = f"zip {args.source} {args.destination}"
         self.send_generic_command(command)

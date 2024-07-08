@@ -2,6 +2,7 @@
 
 This file contains the logic required to fetch tokens for many devices and write them to screen.
 """
+
 import logging
 
 from operator import itemgetter
@@ -23,8 +24,8 @@ def show_device_maintenance_tokens(
 
     tokens = {}
     header_row = [
-        click.style("Device ID", bold=True, fg='blue'),
-        click.style("Maintenance Token", bold=True, fg='blue'),
+        click.style("Device ID", bold=True, fg="blue"),
+        click.style("Maintenance Token", bold=True, fg="blue"),
     ]
     tokens_table = []
 
@@ -36,14 +37,18 @@ def show_device_maintenance_tokens(
             )
             logging.debug("%s -> %s", device_id, token)
             tokens[device_id] = token
-            tokens_table.append([
-                device_id,
-                token,
-            ])
+            tokens_table.append(
+                [
+                    device_id,
+                    token,
+                ]
+            )
 
     tokens_table = sorted(tokens_table, key=itemgetter(1, 0))
     tokens_table.insert(0, header_row)
-    click.echo(tabulate.tabulate(
-        tokens_table,
-        tablefmt='fancy_grid',
-    ))
+    click.echo(
+        tabulate.tabulate(
+            tokens_table,
+            tablefmt="fancy_grid",
+        )
+    )

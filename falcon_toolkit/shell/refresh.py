@@ -7,6 +7,7 @@ expire.
 This allows users to step away from the keyboard while a long operation runs and return to a shell
 that has not timed out.
 """
+
 from threading import Timer
 
 from caracara.modules.rtr import RTRBatchSession
