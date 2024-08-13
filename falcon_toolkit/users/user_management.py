@@ -45,19 +45,17 @@ def _tabulate_users(  # pylint: disable=R0914
 
     for extracted_dict in user_data:
         email_address = extracted_dict["uid"]
-        name = (
-            str(extracted_dict["first_name"])
-            + " "
-            + str(extracted_dict["last_name"])
-        )
+        name = str(extracted_dict["first_name"]) + " " + str(extracted_dict["last_name"])
         creation_date = extracted_dict["created_at"]
         modification_date = extracted_dict["updated_at"]
         uuid = extracted_dict["uuid"]
         if role_data:
-            roles_list = sorted([
-                role_data[x]["display_name"] if x in role_data else x
-                for x in extracted_dict["roles"]
-            ])
+            roles_list = sorted(
+                [
+                    role_data[x]["display_name"] if x in role_data else x
+                    for x in extracted_dict["roles"]
+                ]
+            )
         else:
             roles_list = extracted_dict["roles"]
 
@@ -93,12 +91,12 @@ def add_csv_users(client: Client, csv_name: str):  # pylint: disable=R0914
     """Create users based on a CSV formatted first_name,last_name,email_address."""
     successful_uuid_set: Set[str] = set()
 
-    with open(csv_name, newline="", encoding='utf-8') as csv_file:
+    with open(csv_name, newline="", encoding="utf-8") as csv_file:
         reader = csv.DictReader(csv_file)
         if (
-            "first_name" not in reader.fieldnames or
-            "last_name" not in reader.fieldnames or
-            "email_address" not in reader.fieldnames
+            "first_name" not in reader.fieldnames
+            or "last_name" not in reader.fieldnames
+            or "email_address" not in reader.fieldnames
         ):
             raise KeyError(
                 "The CSV must contain at least the fields first_name, last_name, and email_address"
@@ -111,11 +109,11 @@ def add_csv_users(client: Client, csv_name: str):  # pylint: disable=R0914
             uuid: Optional[str] = None
 
             click.echo(
-                "Processing user: " +
-                click.style(f"{first_name} {last_name}", bold=True) +
-                " (" +
-                click.style(email_address, bold=True) +
-                ")"
+                "Processing user: "
+                + click.style(f"{first_name} {last_name}", bold=True)
+                + " ("
+                + click.style(email_address, bold=True)
+                + ")"
             )
 
             try:
@@ -157,9 +155,7 @@ def add_csv_users(client: Client, csv_name: str):  # pylint: disable=R0914
     _tabulate_users(list(user_data.values()), role_data)
 
 
-def add_single_user(
-    client: Client, first_name: str, last_name: str, email_address: str
-):
+def add_single_user(client: Client, first_name: str, last_name: str, email_address: str):
     """Create a single user in the Falcon tenant."""
     with click_spinner.spinner():
         result = client.users.add_user(first_name, last_name, email_address)
@@ -175,10 +171,7 @@ def delete_user_guardrails(email_addresses: list):
         (False, "Abort"),
         (True, "Delete accounts"),
     ]
-    prompt_text = (
-        "Are you sure you want to delete these accounts? \n" +
-        "\n".join(email_addresses)
-    )
+    prompt_text = "Are you sure you want to delete these accounts?\n" + "\n".join(email_addresses)
     confirmation: bool = csradiolist_dialog(
         title="Confirm User Deletion Action",
         text=prompt_text,
@@ -264,10 +257,7 @@ def add_roles_to_user(client: Client):
 
     print(f"Adding selected roles: {selected_roles}")
     actually_add = prompt("Continue? (yes or no): ")
-    if (
-        actually_add.lower() == "yes"
-        or actually_add.lower() == "y"
-    ):
+    if actually_add.lower() == "yes" or actually_add.lower() == "y":
 
         result = client.users.add_user_roles(user_uuid, selected_roles)
         if result is True:

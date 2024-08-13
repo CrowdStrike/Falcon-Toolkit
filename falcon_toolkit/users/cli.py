@@ -49,7 +49,7 @@ def add_user(ctx: click.Context):
     name="import_users",
     help="Create users from a CSV file formatted first_name,last_name,email_address",
 )
-@click.argument('csv_file')
+@click.argument("csv_file")
 @click.pass_context
 def import_users(ctx: click.Context, csv_file):
     """Create users and set their roles in the Falcon tenant from a CSV file."""
@@ -80,7 +80,7 @@ def delete_user(ctx: click.Context, file_name: str = None, user_email: str = Non
     email_list = []
     if file_name is not None:
         try:
-            with open(file_name, newline="", encoding='utf-8') as email_list_file:
+            with open(file_name, newline="", encoding="utf-8") as email_list_file:
                 email_list = email_list_file.read().splitlines()
             user_deletion(ctx.obj["client"], email_list)
         except FileNotFoundError:
@@ -89,12 +89,14 @@ def delete_user(ctx: click.Context, file_name: str = None, user_email: str = Non
         email_list.append(user_email)
         user_deletion(ctx.obj["client"], email_list)
     else:
-        click.echo(click.style(
-            "Please specify either a file or user email. "
-            "Try 'falcon users delete_user --help' for help.",
-            bold=True,
-            fg="red",
-        ))
+        click.echo(
+            click.style(
+                "Please specify either a file or user email. "
+                "Try 'falcon users delete_user --help' for help.",
+                bold=True,
+                fg="red",
+            )
+        )
 
 
 @click.command(name="describe_users", help="List all existing users in the cloud instance")
