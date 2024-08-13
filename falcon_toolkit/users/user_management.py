@@ -7,7 +7,7 @@ import csv
 import sys
 from operator import itemgetter
 from textwrap import TextWrapper
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Union
 
 import click
 import click_spinner
@@ -22,7 +22,7 @@ from falcon_toolkit.hosts import host_search
 
 
 def _tabulate_users(  # pylint: disable=R0914
-    user_data: List[Dict[str, str]] | Dict[str, str],
+    user_data: Union[List[Dict[str, str]], Dict[str, str]],
     role_data: Optional[Dict[str, Dict]] = None,
 ) -> None:
     """Pretty print a list of users to screen in a tabular format."""
