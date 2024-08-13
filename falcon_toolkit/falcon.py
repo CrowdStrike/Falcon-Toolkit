@@ -54,6 +54,7 @@ from falcon_toolkit.hosts.cli import cli_host_search
 from falcon_toolkit.maintenance_token.cli import cli_maintenance_token
 from falcon_toolkit.policies.cli import cli_policies
 from falcon_toolkit.shell.cli import cli_shell
+from falcon_toolkit.users.cli import cli_users
 
 
 @click.group()
@@ -312,3 +313,4 @@ cli.add_command(cli_list_filters)
 cli.add_command(cli_maintenance_token)
 cli.add_command(cli_policies)
 cli.add_command(cli_shell)
+cli.add_command(cli_users)
