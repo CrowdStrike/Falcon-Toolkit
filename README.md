@@ -183,19 +183,21 @@ Two types of configuration backends are provided out of the box: the default, wh
 
 Your API keys should have the following scopes enabled in the Falcon dashboard:
 
-| &darr; API Scopes // Commands &rarr; | `host_search` | `shell` | `policies`<br>(Prevention) | `policies`<br>(Response)  | `containment`<br>Host Containment | `maintenance_token`<br>Maintenance Tokens |
-|--------------------------------------|:-------------:|:-------:|:--------------------------:|:-------------------------:|:---------------------------------:|:-----------------------------------------:|
+| &darr; API Scopes // Commands &rarr; | `host_search` | `shell` | `policies`<br>(Prevention) | `policies`<br>(Response)  | `containment`<br>Host Containment | `maintenance_token`<br>Maintenance Tokens | `user_modification` |
+|--------------------------------------|:-------------:|:-------:|:--------------------------:|:-------------------------:|:---------------------------------:|:-----------------------------------------:| :--------------------: |
 | **Falcon Flight Control: Read**      | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | X<br>*When using parent<br>CID API Keys* | | |
-| **Hosts: Read**                      |       X       |    X    |                            |                           | X | X |
-| **Hosts: Write**                     |               |         |                            |                           | X | |
-| **Prevention Policies: Read**        |               |         | X<br>`describe` / `export` sub-commands |              |   | |
-| **Prevention Policies: Write**       |               |         | X<br>`import` sub-command  |                           |   | |
-| **Real Time Response: Read**         |               |    X    |                            |                           |   | |
-| **Real Time Response: Write**        |               |    X    |                            |                           |   | |
-| **Real Time Response: Admin**        |               |    X<br>*for admin commands*    |    |                           |   | |
-| **Response Policies: Read**          |               |         |                            | X<br>`describe` / `export` sub-commands |   | |
-| **Response Policies: Write**         |               |         |                            | X<br>`import` sub-command |   | |
-| **Sensor Update Policies: Write**    |               |         |                            |                           |   | X |
+| **Hosts: Read**                      |       X       |    X    |                            |                           | X | X |   |
+| **Hosts: Write**                     |               |         |                            |                           | X |   |   |
+| **Prevention Policies: Read**        |               |         | X<br>`describe` / `export` sub-commands |              |   |   |   |
+| **Prevention Policies: Write**       |               |         | X<br>`import` sub-command  |                           |   |   |   |
+| **Real Time Response: Read**         |               |    X    |                            |                           |   |   |   |
+| **Real Time Response: Write**        |               |    X    |                            |                           |   |   |   |
+| **Real Time Response: Admin**        |               |    X<br>*for admin commands*    |    |                           |   |   |   |
+| **Response Policies: Read**          |               |         |                            | X<br>`describe` / `export` sub-commands |   |   |   |
+| **Response Policies: Write**         |               |         |                            | X<br>`import` sub-command |   |   |   |
+| **Sensor Update Policies: Write**    |               |         |                            |                           |   | X |   |
+| **Sensor Download: Read**            |               |         |                            |                           |   |   | X |
+| **User Management: Write**           |               |         |                            |                           |   |   | X |
 
 ### Showing Your Profiles
 
@@ -465,6 +467,22 @@ Import a Prevention policy to the one configured Falcon tenant:
 ```shell
 $ falcon policies -p import MyExportedPolicy.json
 ...
+```
+
+## User Manipulation
+
+You can `add_user`, `delete_user`, and `add_roles` to users within your Falcon instance. These can be applied to the `falcon users` to specify what type of user manipulation you would like to perform. The `import_users` option can also be used to import multiple users from a CSV format.
+
+### CSV Formatting for `import_users`
+The CSV must contain the header first_name,last_name,email_address, and optionally may contain the roles field.
+
+first_name,last_name,email_address,roles
+alice,example,alice.example@example.com
+bob,example,bob.example@example.com,risk_manager
+eve,example,eve.example@example.com
+
+```shell
+$ falcon users import_users NewUsers.csv
 ```
 
 ## Support & Community Forums
