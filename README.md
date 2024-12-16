@@ -472,9 +472,16 @@ $ falcon policies -p import MyExportedPolicy.json
 
 ## User Manipulation
 
-You can `add_user`, `delete_user`, and `add_roles` to users within your Falcon instance. These can be applied to the `falcon users` to specify what type of user manipulation you would like to perform. The `import_users` option can also be used to import multiple users from a CSV format.
+The `falcon users` command has multiple sub-commands that let you view and manipulate users in your Falcon tenant.
+- `add_user`: Add a new user.
+- `add_roles`: Assign new roles to a user.
+- `delete_user`: Delete a user.
+- `describe_users`: Show all users in a Falcon tenant alongside their roles.
+- `import_users`: Import a list of users from a CSV.
+- `list_roles`: Show all roles that may be assigned to users.
 
 ### CSV Formatting for `import_users`
+
 The CSV must contain the header first_name,last_name,email_address, and optionally may contain the roles field.
 
 first_name,last_name,email_address,roles
