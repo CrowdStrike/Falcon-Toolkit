@@ -105,9 +105,7 @@ def cli(
     profile: str,
     cid: str,
 ):
-    fr"""
-    Falcon Toolkit.
-    Version: {__version__}
+    r"""Falcon Toolkit.
 
     The Falcon Toolkit is a handy command line interface (CLI) tool that can help you interface
     with your Falcon instance more quickly.
