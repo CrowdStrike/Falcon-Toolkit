@@ -137,8 +137,8 @@ def cli(
     # Configure context that can be passed down to other options
     ctx.ensure_object(dict)
     click.echo(
-        click.style("Falcon Toolkit", fg="blue", bold=True) +
-        click.style(f" v{__version__}", fg="black", bold=True)
+        click.style("Falcon Toolkit", fg="blue", bold=True)
+        + click.style(f" v{__version__}", fg="black", bold=True)
     )
     hyperlink = build_file_hyperlink(config_path, config_path, "falcon_config_path")
     click.echo(click.style(f"Configuration Directory: {hyperlink}", fg="black"))
