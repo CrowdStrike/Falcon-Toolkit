@@ -94,7 +94,7 @@ from falcon_toolkit.shell.prompt import RTRPrompt
     required=False,
     help="Set the timeout for RTR (default: 30s)",
 )
-def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals
+def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-positional-arguments
     ctx: click.Context,
     device_id_list: str,
     device_id_file: str,
