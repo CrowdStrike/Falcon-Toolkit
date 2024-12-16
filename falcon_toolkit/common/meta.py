@@ -3,7 +3,9 @@
 This is where all functions and variable setting that are based on application metadata live.
 """
 
-import pkg_resources
+import importlib.metadata
 
-# Derive the version via pkg_resources, which is populated based on the version in pyproject.toml
-__version__ = pkg_resources.get_distribution(__name__.split(".", maxsplit=1)[0]).version
+# Derive the version via importlib.metadata, which is populated based on the version in
+# pyproject.toml. We used to use pkg_resources for this, but using importlib.metadata means
+# that setuptools is no longer required.
+__version__ = importlib.metadata.version("falcon-toolkit")
