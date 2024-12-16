@@ -48,6 +48,7 @@ from falcon_toolkit.common.constants import (
     OLD_DEFAULT_CONFIG_DIR,
 )
 from falcon_toolkit.common.logging_config import configure_logger
+from falcon_toolkit.common.meta import __version__
 from falcon_toolkit.common.utils import configure_data_dir
 from falcon_toolkit.containment.cli import cli_containment
 from falcon_toolkit.hosts.cli import cli_host_search
@@ -135,7 +136,10 @@ def cli(
 
     # Configure context that can be passed down to other options
     ctx.ensure_object(dict)
-    click.echo(click.style("Falcon Toolkit", fg="blue", bold=True))
+    click.echo(
+        click.style("Falcon Toolkit", fg="blue", bold=True)
+        + click.style(f" v{__version__}", fg="black", bold=True)
+    )
     hyperlink = build_file_hyperlink(config_path, config_path, "falcon_config_path")
     click.echo(click.style(f"Configuration Directory: {hyperlink}", fg="black"))
     if verbose:

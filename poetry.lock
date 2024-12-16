@@ -208,30 +208,29 @@ cffi = ">=1.0.0"
 
 [[package]]
 name = "caracara"
-version = "0.8.0"
+version = "0.9.2"
 description = "The CrowdStrike Falcon Developer Toolkit"
 optional = false
 python-versions = "<4.0.0,>=3.8.2"
 files = [
-    {file = "caracara-0.8.0-py3-none-any.whl", hash = "sha256:54a0eec3c2f43bf27f9bfefac77b49af887640b734cfbaabd1f5378e386bd575"},
-    {file = "caracara-0.8.0.tar.gz", hash = "sha256:a5fd1c854641abf30c38b51be654ce62390a2dc2b5341656f61fd8f6fff4a5a4"},
+    {file = "caracara-0.9.2-py3-none-any.whl", hash = "sha256:61cae61a23484aad8b1798b03d80c9206de61fd4f31a5cc4bf77bca00eb0ac7b"},
+    {file = "caracara-0.9.2.tar.gz", hash = "sha256:1051389c5e80bc552f3b6ed917312c0a51671f9acdd33bf70a9c547797370d02"},
 ]
 
 [package.dependencies]
-caracara-filters = ">=0.2,<0.3"
+caracara-filters = ">=1.0.0,<2.0.0"
 crowdstrike-falconpy = ">=1.4.0,<2.0.0"
-py7zr = ">=0.20,<0.22"
-setuptools = ">=69.0,<70.0"
+py7zr = ">=0.22.0,<0.23.0"
 
 [[package]]
 name = "caracara-filters"
-version = "0.2.0"
+version = "1.0.0"
 description = "FQL generation engine for Caracara"
 optional = false
-python-versions = ">=3.7.2,<4.0.0"
+python-versions = "<4.0.0,>=3.8.2"
 files = [
-    {file = "caracara_filters-0.2.0-py3-none-any.whl", hash = "sha256:853bb9ebf754dc6d707c17b4489dc5c3cf79756071736921b14f60a33cab2b77"},
-    {file = "caracara_filters-0.2.0.tar.gz", hash = "sha256:cc0813a7e0cf64b5e9c20cee289610cd25f7a03b2d84988e5fa21333a2485d5e"},
+    {file = "caracara_filters-1.0.0-py3-none-any.whl", hash = "sha256:7c9d2ddac483e4ec94b288fe7369bb8633401a9743fa8ea84da9fbeadbed1809"},
+    {file = "caracara_filters-1.0.0.tar.gz", hash = "sha256:f31c03ceb884ff1db371e9bcb72158446ca1f2ba2e2de402028d504de111fb44"},
 ]
 
 [[package]]
@@ -1050,13 +1049,13 @@ test = ["pytest", "pytest-xdist", "setuptools"]
 
 [[package]]
 name = "py7zr"
-version = "0.21.1"
+version = "0.22.0"
 description = "Pure python 7-zip library"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "py7zr-0.21.1-py3-none-any.whl", hash = "sha256:57e5be6fafaa417fe93fa9c81f7f01bb579d3cfe1631f535a3e641200ac87dc2"},
-    {file = "py7zr-0.21.1.tar.gz", hash = "sha256:dede8ed8b7b32b3586ac476da3a482b69dd433229420bf0f62c495404b72c799"},
+    {file = "py7zr-0.22.0-py3-none-any.whl", hash = "sha256:993b951b313500697d71113da2681386589b7b74f12e48ba13cc12beca79d078"},
+    {file = "py7zr-0.22.0.tar.gz", hash = "sha256:c6c7aea5913535184003b73938490f9a4d8418598e533f9ca991d3b8e45a139e"},
 ]
 
 [package.dependencies]
@@ -1075,7 +1074,7 @@ texttable = "*"
 check = ["black (>=23.1.0)", "check-manifest", "flake8 (<8)", "flake8-black (>=0.3.6)", "flake8-deprecated", "flake8-isort", "isort (>=5.0.3)", "lxml", "mypy (>=0.940)", "mypy-extensions (>=0.4.1)", "pygments", "readme-renderer", "twine", "types-psutil"]
 debug = ["pytest", "pytest-leaks", "pytest-profiling"]
 docs = ["docutils", "sphinx (>=5.0)", "sphinx-a4doc", "sphinx-py3doc-enhanced-theme"]
-test = ["coverage[toml] (>=5.2)", "coveralls (>=2.1.1)", "py-cpuinfo", "pyannotate", "pytest", "pytest-benchmark", "pytest-cov", "pytest-remotedata", "pytest-timeout"]
+test = ["coverage[toml] (>=5.2)", "coveralls (>=2.1.1)", "py-cpuinfo", "pytest", "pytest-benchmark", "pytest-cov", "pytest-remotedata", "pytest-timeout"]
 test-compat = ["libarchive-c"]
 
 [[package]]
@@ -1525,22 +1524,6 @@ cryptography = ">=2.0"
 jeepney = ">=0.6"
 
 [[package]]
-name = "setuptools"
-version = "69.5.1"
-description = "Easily download, build, install, upgrade, and uninstall Python packages"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "setuptools-69.5.1-py3-none-any.whl", hash = "sha256:c636ac361bc47580504644275c9ad802c50415c7522212252c033bd15f301f32"},
-    {file = "setuptools-69.5.1.tar.gz", hash = "sha256:6c1fccdac05a97e598fb0ae3bbed5904ccb317337a51139dcd51453611bbb987"},
-]
-
-[package.extras]
-docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
-testing = ["build[virtualenv]", "filelock (>=3.4.0)", "importlib-metadata", "ini2toml[lite] (>=0.9)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "mypy (==1.9)", "packaging (>=23.2)", "pip (>=19.1)", "pytest (>=6,!=8.1.1)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-home (>=0.5)", "pytest-mypy", "pytest-perf", "pytest-ruff (>=0.2.1)", "pytest-timeout", "pytest-xdist (>=3)", "tomli", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
-testing-integration = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "packaging (>=23.2)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
-
-[[package]]
 name = "snowballstemmer"
 version = "2.2.0"
 description = "This package provides 29 stemmers for 28 languages generated from Snowball algorithms."
@@ -1700,4 +1683,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "1034c88efbdbe59cd59c58b2f9c1e07afd2c373926e16c395518ab6ea8e251ff"
+content-hash = "1e38806c0886ba81bf6f5f9708211b58120461b15ec59159e7905fc1a0406fcc"
