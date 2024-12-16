@@ -49,6 +49,7 @@ class RTRPrompt(Cmd):
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
+    # pyling: disable=too-many-positional-arguments
     # pylint: disable=too-many-statements
     def __init__(
         self,
@@ -388,6 +389,7 @@ class RTRPrompt(Cmd):
 
         return get_file_data
 
+    # pylint: disable=too-many-positional-arguments
     def write_result_row(self, command: str, aid: str, complete: bool, stdout: str, stderr: str):
         """Write a row of output to the CSV log file."""
         hostname = self.device_data[aid].get("hostname", "<NO HOSTNAME>")
