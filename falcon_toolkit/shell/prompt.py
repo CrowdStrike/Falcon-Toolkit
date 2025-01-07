@@ -501,7 +501,7 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.cloud_scripts, preserve_quotes=False)
     def do_cloud_scripts(self, args):
         """List scripts saved in the cloud. These can be run with runscript -CloudFile."""
-        scripts = self.client.rtr.query_scripts()
+        scripts = self.client.rtr.describe_scripts()
         sorted_scripts = sorted(
             scripts.items(),
             key=lambda x: x[1]["name"],
