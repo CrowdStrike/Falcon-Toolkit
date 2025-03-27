@@ -528,27 +528,20 @@ test = ["click", "pytest", "six"]
 
 [[package]]
 name = "cmd2"
-version = "2.5.7"
+version = "2.5.11"
 description = "cmd2 - quickly build feature-rich and user-friendly interactive command line applications in Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "cmd2-2.5.7-py3-none-any.whl", hash = "sha256:7e5856fd1a75716288d4638e68946f9697404f377dfdeeddc19045c7012de9b7"},
-    {file = "cmd2-2.5.7.tar.gz", hash = "sha256:0219e2bb75075fa16deffb88edf86efdd2a87439d1fa7b94fdea4b929a3dc914"},
+    {file = "cmd2-2.5.11-py3-none-any.whl", hash = "sha256:cbc79525e423dc2085ef7922cdc5586d1fedaecb768cdfb05e5482ee0740b755"},
+    {file = "cmd2-2.5.11.tar.gz", hash = "sha256:30a0d385021fbe4a4116672845e5695bbe56eb682f9096066776394f954a7429"},
 ]
 
 [package.dependencies]
-gnureadline = {version = "*", markers = "platform_system == \"Darwin\""}
-pyperclip = "*"
-pyreadline3 = {version = "*", markers = "platform_system == \"Windows\""}
-wcwidth = "*"
-
-[package.extras]
-build = ["build", "setuptools", "setuptools-scm"]
-dev = ["codecov", "doc8", "invoke", "mypy", "pytest", "pytest-cov", "pytest-mock", "ruff", "sphinx", "sphinx-autobuild", "sphinx-rtd-theme", "twine"]
-docs = ["setuptools", "setuptools_scm", "sphinx", "sphinx-autobuild", "sphinx-rtd-theme"]
-test = ["codecov", "coverage", "pytest", "pytest-cov", "pytest-mock"]
-validate = ["mypy", "ruff", "types-setuptools"]
+gnureadline = {version = ">=8", markers = "platform_system == \"Darwin\""}
+pyperclip = ">=1.8"
+pyreadline3 = {version = ">=3.4", markers = "platform_system == \"Windows\""}
+wcwidth = ">=0.2.10"
 
 [[package]]
 name = "colorama"
