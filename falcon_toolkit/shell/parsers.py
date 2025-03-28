@@ -311,11 +311,27 @@ put_and_run_argparser = Cmd2ArgumentParser()
 put_and_run_argparser.add_argument(
     "file",
     help=(
-        "[Windows] Name of the file to download to the host from the CrowdStrike Cloud, "
+        "[Windows/macOS] Name of the file to download to the host from the CrowdStrike Cloud, "
         "and consequently execute. The file will be executed from the directory: "
         "C:\\windows\\system32\\drivers\\crowdstrike\\rtr\\putrun."
     ),
     choices=PUT_FILE_CHOICES,
+)
+put_and_run_argparser.add_argument(
+    "-CommandLine",
+    dest="command_line_args",
+    help="Command line arguments passed to the executable",
+)
+put_and_run_argparser.add_argument(
+    "-Wait",
+    dest="wait",
+    help=(
+        "Run the program and wait for the result code. "
+        "The default behaviour (i.e. without the -Wait option) "
+        "is to start the program and return without waiting for "
+        "the result code."
+    ),
+    action="store_true",
 )
 
 reg_argparser = Cmd2ArgumentParser()

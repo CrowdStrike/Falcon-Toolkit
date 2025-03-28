@@ -838,10 +838,17 @@ class RTRPrompt(Cmd):
         command = f"put {args.file}"
         self.send_generic_command(command)
 
-    @with_argparser(PARSERS.put_and_run, preserve_quotes=True)
+    @with_argparser(PARSERS.put_and_run)
     def do_put_and_run(self, args):
-        """[Windows] Download and immediately execute a file from the CrowdStrike Cloud."""
-        command = f"put-and-run {args.file}"
+        """[Windows/macOS] Download and immediately execute a file from the CrowdStrike Cloud."""
+        command = f'put-and-run "{args.file}"'
+
+        if args.command_line_args:
+            command = f"{command} -CommandLine=```{args.command_line_args}```"
+
+        if args.wait:
+            command = f"{command} -Wait"
+
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.put_files, preserve_quotes=False)
