@@ -6,6 +6,7 @@ in turn instantiated and invoked, by the code within shell/cli.py.
 
 import concurrent.futures
 import csv
+import json
 import os
 import sys
 
@@ -31,11 +32,12 @@ from falcon_toolkit.shell.cmd_generators.common import CommandBuilderException
 from falcon_toolkit.shell.cmd_generators.reg import reg_builder
 from falcon_toolkit.shell.parsers import (
     CLOUD_SCRIPT_CHOICES,
+    FALCON_SCRIPT_CHOICES,
     PARSERS,
     PUT_FILE_CHOICES,
 )
 from falcon_toolkit.shell.refresh import SessionRefreshTimer
-from falcon_toolkit.shell.utils import output_file_name
+from falcon_toolkit.shell.utils import output_falcon_script_result, output_file_name
 
 
 # pylint: disable=too-many-instance-attributes
@@ -129,18 +131,6 @@ class RTRPrompt(Cmd):
         spinner = click_spinner.Spinner()
         spinner.start()
 
-        def _grab_put_files():
-            """Load a list of RTR PUT files into the put command's parser.
-
-            This is for tab completion.
-            """
-            put_files = self.client.rtr.describe_put_files()
-            put_file_names = []
-            for put_file_id in put_files.keys():
-                put_file_names.append(put_files[put_file_id]["name"])
-            PUT_FILE_CHOICES.clear()
-            PUT_FILE_CHOICES.extend(sorted(put_file_names))
-
         def _grab_custom_scripts():
             """Load a list of RTR cloud scripts into the runscript command's parser.
 
@@ -153,17 +143,43 @@ class RTRPrompt(Cmd):
             CLOUD_SCRIPT_CHOICES.clear()
             CLOUD_SCRIPT_CHOICES.extend(sorted(script_names))
 
+        def _grab_falcon_scripts():
+            """Load a list of Falcon scripts into the falconscript command's parser.
+
+            This is for tab completion.
+            """
+            falcon_scripts = self.client.rtr.describe_falcon_scripts()
+            script_names = []
+            for script_id in falcon_scripts.keys():
+                script_names.append(falcon_scripts[script_id]["name"])
+            FALCON_SCRIPT_CHOICES.clear()
+            FALCON_SCRIPT_CHOICES.extend(script_names)
+
+        def _grab_put_files():
+            """Load a list of RTR PUT files into the put command's parser.
+
+            This is for tab completion.
+            """
+            put_files = self.client.rtr.describe_put_files()
+            put_file_names = []
+            for put_file_id in put_files.keys():
+                put_file_names.append(put_files[put_file_id]["name"])
+            PUT_FILE_CHOICES.clear()
+            PUT_FILE_CHOICES.extend(sorted(put_file_names))
+
         # Parallelise all data retrieval tasks
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            grab_custom_scripts_future = executor.submit(_grab_custom_scripts)
+            grab_falcon_scripts_future = executor.submit(_grab_falcon_scripts)
             grab_put_files_future = executor.submit(_grab_put_files)
-            grab_scripts_future = executor.submit(_grab_custom_scripts)
             device_data_future = executor.submit(
                 self.client.hosts.get_device_data,
                 device_ids,
             )
 
+            _ = grab_custom_scripts_future.result()
+            _ = grab_falcon_scripts_future.result()
             _ = grab_put_files_future.result()
-            _ = grab_scripts_future.result()
             self.device_data = device_data_future.result()
 
         spinner.stop()
@@ -405,7 +421,9 @@ class RTRPrompt(Cmd):
         self.csv_writer.writerow(row)
         self.output_line_n += 1
 
-    def send_generic_command(self, command: str) -> Tuple[Optional[str], Optional[str]]:
+    def send_generic_command(
+        self, command: str, skip_stdout_print=False
+    ) -> Tuple[Optional[str], Optional[str]]:
         """Execute an arbitrary RTR command on the hosts within the session set.
 
         This function is used by other RTR commands to implement simple shell -> RTR command
@@ -447,7 +465,7 @@ class RTRPrompt(Cmd):
                 # one host and stderr from another
                 outputs = (stdout, stderr)
 
-            if not printed_first:
+            if not printed_first and not skip_stdout_print:
                 hostname = self.device_data[aid].get("hostname", "<NO HOSTNAME>")
                 self.poutput(f"{hostname}: {stdout}")
                 self.perror(f"{Fore.RED}{hostname}: {stderr}{Fore.RESET}")
@@ -611,6 +629,54 @@ class RTRPrompt(Cmd):
                 command = f"{command} {args.source_name}"
 
         self.send_generic_command(command)
+
+    @with_argparser(PARSERS.falconscript, preserve_quotes=False)
+    def do_falconscript(self, args):
+        """Execute a Falcon-provided script."""
+        if not args.falcon_script_name:
+            self.perror(Fore.RED + "You must provide the name of a Falcon script to execute.")
+            return
+
+        falcon_script_name: str = args.falcon_script_name
+        command = f"falconscript -Name=```{falcon_script_name}```"
+
+        if args.json_input:
+            # Check if the user provided valid JSON before we send it to the Cloud
+            try:
+                json.loads(args.json_input)
+            except json.decoder.JSONDecodeError as e:
+                self.perror(
+                    Fore.RED
+                    + "The JSON you provided is not valid. The JSON decoder returned the following "
+                    f"error: {e}"
+                )
+                return
+            command += f" -JsonInput=```'{args.json_input}'```"
+
+        elif args.json_input_file_path:
+            with open(args.json_input_file_path, "r", encoding="utf-8") as json_input_file:
+                try:
+                    json_input_data = json.load(json_input_file)
+                except json.decoder.JSONDecodeError as e:
+                    self.perror(
+                        Fore.RED
+                        + "You JSON within the file at the path you provided is not valid. "
+                        f"The JSON decoder returned the following error: {e}"
+                    )
+                    return
+            json_output_flat = json.dumps(json_input_data)
+            command += f" -JsonInput=```'{json_output_flat}'```"
+
+        else:
+            self.poutput(Fore.YELLOW + "Running Falcon script with no JSON parameters provided")
+
+        stdout, _ = self.send_generic_command(command, skip_stdout_print=True)
+
+        if stdout:
+            printed_successfully = output_falcon_script_result(stdout)
+            if not printed_successfully:
+                self.perror("Could not successfully decode the JSON response:")
+                self.perror(stdout)
 
     @with_argparser(PARSERS.filehash, preserve_quotes=True)
     def do_filehash(self, args):

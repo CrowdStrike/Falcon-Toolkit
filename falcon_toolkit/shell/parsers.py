@@ -15,6 +15,7 @@ from cmd2 import (
 from falcon_toolkit.common.namespace import FalconRecursiveNamespace
 
 CLOUD_SCRIPT_CHOICES = []
+FALCON_SCRIPT_CHOICES = []
 PUT_FILE_CHOICES = []
 
 
@@ -141,6 +142,34 @@ eventlog_parser_view.add_argument(
 eventlog_parser_view.add_argument(
     "source_name", nargs="?", help="Name of the event source, e.g. 'WinLogon'"
 )
+
+falconscript_parser = Cmd2ArgumentParser()
+falconscript_parser.add_argument(
+    "-Name",
+    dest="falcon_script_name",
+    help="Name of the Falcon script to run (tab completes)",
+    choices=FALCON_SCRIPT_CHOICES,
+)
+falconscript_json_group = falconscript_parser.add_mutually_exclusive_group(required=False)
+falconscript_json_group.add_argument(
+    "-JsonInput",
+    dest="json_input",
+    help=(
+        "JSON input for the Falcon script. You may wrap the JSON in single quotes which will be "
+        "handled by Falcon Toolkit correctly. You may alternative use -JsonInputFile to provide "
+        "a path to a .JSON input file on disk instead."
+    ),
+)
+falconscript_json_group.add_argument(
+    "-JsonInputFile",
+    dest="json_input_file_path",
+    help=(
+        "Provide a path to a .json file containing input data for the Falcon script, instead of "
+        "passing JSON data directly on the command line via -JsonInput."
+    ),
+    completer=Cmd.path_complete,
+)
+
 ls_argparser = Cmd2ArgumentParser()
 ls_argparser.add_argument(
     "directory",
@@ -677,6 +706,7 @@ _PARSERS = {
     "env": env_argparser,
     "eventlog": eventlog_argparser,
     "ls": ls_argparser,
+    "falconscript": falconscript_parser,
     "filehash": filehash_argparser,
     "get": get_argparser,
     "get_status": get_status_argparser,
