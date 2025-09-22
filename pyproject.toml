@@ -51,7 +51,7 @@ pylint = "^3.0.0"
 pytest = "^8.0.1"
 pydocstyle = "^6.1.1"
 toml = "^0.10.2"
-black = "^24.4.2"
+black = ">=24.4.2,<26.0.0"
 
 [tool.pylint.messages_control]
 disable = [
