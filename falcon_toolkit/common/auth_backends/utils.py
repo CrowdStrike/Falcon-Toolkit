@@ -20,7 +20,6 @@ from caracara.common.csdialog import csradiolist_dialog
 
 from falcon_toolkit.common.utils import fancy_input
 
-
 CLOUDS = {
     "auto": "Automatic cloud selection (supports US-1, US-2 and EU-1)",
     "us-1": "US-1: Falcon US-1 Falcon cloud (api.crowdstrike.com)",
