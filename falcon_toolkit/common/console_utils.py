@@ -6,7 +6,6 @@ colourful and/or helpful way.
 
 import platform
 
-
 ESC = "\033"
 OSC = ESC + "]"
 ST = ESC + "\\"

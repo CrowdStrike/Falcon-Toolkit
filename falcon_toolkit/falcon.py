@@ -25,6 +25,7 @@ the following steps:
     Click CLI command, as needed
 - Configures a global logger
 """
+
 import logging
 import os
 import shutil
