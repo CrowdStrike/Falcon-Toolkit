@@ -11,30 +11,54 @@ on:
       - 'v*'
   pull_request:
 
+permissions:
+  contents: read
+
+
 jobs:
   codequality:
+    environment: code-quality
+    timeout-minutes: 30
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-    runs-on: ubuntu-24.04
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+      with:
+        egress-policy: audit
+        disable-sudo-and-containers: true
+
+    - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+
     - name: Install Poetry via pipx
-      run: pipx install poetry
+      run: pipx install poetry==2.2.1
+
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'poetry'
+
     - name: Install dependencies
       run: poetry install
+
     - name: Lint package source with flake8
       run: poetry run flake8 falcon_toolkit/ --show-source --statistics
+
     - name: Lint package source with pylint
       if: success() || failure()
       run: poetry run pylint falcon_toolkit/
+
     - name: Lint package docstrings and comments with pydocstyle
       if: success() || failure()
       run: poetry run pydocstyle falcon_toolkit/
+
     - name: Lint package with black
       run: poetry run black -l 100 --check falcon_toolkit/
+
+    - name: Check for security vulnerabiltiies in the virtual environment
+      if: success() || failure()
+      run: |
+        poetry run pip-audit
