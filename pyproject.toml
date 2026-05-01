@@ -48,10 +48,10 @@ falcon = "falcon_toolkit.falcon:cli"
 [tool.poetry.group.dev.dependencies]
 flake8 = ">=6,<8"
 pylint = "^3.0.0"
-pytest = "^8.0.1"
+pytest = "^9.0.3"
 pydocstyle = "^6.1.1"
 toml = "^0.10.2"
-black = "^24.4.2"
+black = "^26.3.1"
 pip-audit = "^2.10.0"
 
 [tool.pylint.messages_control]
