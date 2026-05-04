@@ -59,6 +59,7 @@ from falcon_toolkit.users.cli import cli_users
 
 
 @click.group()
+@click.version_option(version=__version__, prog_name="Falcon Toolkit")
 @click.pass_context
 @click.option(
     "-c",
