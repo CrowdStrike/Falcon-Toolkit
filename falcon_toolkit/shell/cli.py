@@ -94,6 +94,18 @@ from falcon_toolkit.shell.prompt import RTRPrompt
     required=False,
     help="Set the timeout for RTR (default: 30s)",
 )
+@optgroup.option(
+    "-o",
+    "--online-state",
+    "online_state",
+    type=click.Choice(OnlineState.VALUES),
+    multiple=False,
+    required=False,
+    help=(
+        "Filter hosts by online state (online, offline, or unknown). "
+        "If not specified, attempts to connect to all hosts regardless of state"
+    ),
+)
 def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-positional-arguments
     ctx: click.Context,
     device_id_list: str,
@@ -102,6 +114,7 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-po
     queueing: bool,
     startup_script: str,
     timeout: int,
+    online_state: str,
 ):
     """Implement the falcon shell command.
 
@@ -114,8 +127,11 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-po
       -> Falcon, based on a list of filters provided via one or many -f switches
       -> Falcon, based on no filters or restrictions at all (i.e., connect to all hosts in a tenant)
       -> The CLI, based on a comma delimited list of Device IDs passed via a -d switch
-      -> A file, based on a new-lien delimited list of Device IDs within a file, the name of which
-         is passed to the CLI via the the -df switch
+      -> A file, based on a new-line delimited list of Device IDs within a file, the name of which
+         is passed to the CLI via the -df switch
+    - Optionally filtering devices by online state (online, offline, unknown) via -o/--online-state.
+      If not specified, all systems are included regardless of state, as systems in "unknown" state
+      may still accept RTR connections, and systems can transition states between query and connection
     - Configuring the output CSV for all commands to be logged to
 
     Once we have all the required information together, we configure an RTRPrompt object then
@@ -124,9 +140,39 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-po
     instance = get_instance(ctx)
     client = instance.auth_backend.authenticate(ctx)
 
-    # Show online hosts only if queueing is false
-    online_state = None if queueing else OnlineState.ONLINE
-    online_string = "" if queueing else "online "
+    # Determine online state filtering logic:
+    # Only filter by online_state if explicitly provided by the user via --online-state
+    # If not provided, we attempt to connect to all systems regardless of state because:
+    # - Systems can come online between search and shell start
+    # - Systems with flaky connectivity may show as "unknown" but still accept RTR commands
+    should_filter_online_state = online_state is not None
+    online_string = "" if not should_filter_online_state else f"{online_state} "
+
+    # Warn if user is queueing to online systems (unusual usage pattern)
+    if queueing and online_state == OnlineState.ONLINE.value:
+        click.echo(
+            click.style(
+                "WARNING: Queueing to online systems is unusual. "
+                "Online systems can receive commands immediately without queueing.",
+                fg="yellow",
+                bold=True,
+            )
+        )
+        logging.warning("Queueing enabled with online_state=online (unusual configuration)")
+
+    # Block --online-state offline without --queueing: offline hosts require queue_offline=true
+    # to receive RTR commands; without it the API skips all of them and nothing connects.
+    if not queueing and online_state == OnlineState.OFFLINE.value:
+        click.echo(
+            click.style(
+                "ERROR: --online-state offline requires --queueing. "
+                "Offline hosts can only receive RTR commands via queued sessions. "
+                "Without queueing, no connections will succeed.",
+                fg="red",
+                bold=True,
+            )
+        )
+        sys.exit(1)
 
     if filter_kv_strings:
         click.echo(
@@ -143,7 +189,11 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-po
         click.echo(filters)
         logging.info(filters)
 
-        device_ids = client.hosts.get_device_ids(filters=filters, online_state=online_state)
+        # Only filter by online_state if explicitly provided
+        if should_filter_online_state:
+            device_ids = client.hosts.get_device_ids(filters=filters, online_state=online_state)
+        else:
+            device_ids = client.hosts.get_device_ids(filters=filters)
     elif device_id_list:
         click.echo(
             click.style(
@@ -160,10 +210,15 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-po
             if device_id:
                 device_ids.add(device_id)
 
-        device_ids = client.hosts.filter_device_ids_by_online_state(
-            list(device_ids),
-            online_state=online_state,
-        )
+        # Only filter by online_state if explicitly provided
+        if should_filter_online_state:
+            device_ids = client.hosts.filter_device_ids_by_online_state(
+                list(device_ids),
+                online_state=online_state,
+            )
+        else:
+            # Use all provided device IDs without filtering by online state
+            device_ids = list(device_ids)
     elif device_id_file:
         click.echo(
             click.style(
@@ -182,10 +237,15 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-po
                 line = line.strip()
                 if line:
                     device_ids.add(line)
-            device_ids = client.hosts.filter_device_ids_by_online_state(
-                list(device_ids),
-                online_state=online_state,
-            )
+            # Only filter by online_state if explicitly provided
+            if should_filter_online_state:
+                device_ids = client.hosts.filter_device_ids_by_online_state(
+                    list(device_ids),
+                    online_state=online_state,
+                )
+            else:
+                # Use all device IDs from file without filtering by online state
+                device_ids = list(device_ids)
     else:
         click.echo(
             click.style(
@@ -194,7 +254,11 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-po
             )
         )
         logging.info("Connecting to all %shosts in the Falcon instance", online_string)
-        device_ids = client.hosts.get_device_ids(online_state=online_state)
+        # Only filter by online_state if explicitly provided
+        if should_filter_online_state:
+            device_ids = client.hosts.get_device_ids(online_state=online_state)
+        else:
+            device_ids = client.hosts.get_device_ids()
 
     if not device_ids:
         click.echo(
