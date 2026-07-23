@@ -1043,7 +1043,7 @@ class RTRPrompt(Cmd):
         tar_file = args.filename
         mode = "-c" if args.create else "-u"
         source = args.source
-        if args.auto:
+        if args.compress_auto:
             compression = "-a"
         elif args.gzip:
             compression = "-z"
