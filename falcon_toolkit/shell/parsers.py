@@ -693,6 +693,13 @@ zip_argparser.add_argument(
     "destination",
     help="Target zip file name. Relative or absolute path.",
 )
+zip_argparser.add_argument(
+    "-r",
+    "--recurse-paths",
+    help="[Linux/macOS] Travel the directory structure recursively",
+    action="store_true",
+    dest="recursive",
+)
 
 _PARSERS = {
     "cat": cat_argparser,
