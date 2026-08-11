@@ -1096,5 +1096,8 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.zip, preserve_quotes=True)
     def do_zip(self, args):
         """Compress a file or directory into a zip file."""
-        command = f"zip {args.source} {args.destination}"
+        if args.recursive:
+            command = f"zip -r {args.source} {args.destination}"
+        else:
+            command = f"zip {args.source} {args.destination}"
         self.send_generic_command(command)
