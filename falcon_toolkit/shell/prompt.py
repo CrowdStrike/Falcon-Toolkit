@@ -956,6 +956,11 @@ class RTRPrompt(Cmd):
                 self.poutput(Style.RESET_ALL + put_file["description"])
             self.poutput()
 
+    @with_argparser(PARSERS.pwd, preserve_quotes=True)
+    def do_pwd(self, args):
+        """[Linux/macOS] Print the full filename of the current working directory."""
+        self.send_generic_command("pwd")
+
     @with_argparser(PARSERS.reg, preserve_quotes=True)
     def do_reg(self, args):
         """[Windows] Registry manipulation. Subcommands: delete, load, query, set, unload."""
@@ -984,6 +989,16 @@ class RTRPrompt(Cmd):
             command = f"rm {args.path} -Force"
         else:
             command = f"rm {args.path}"
+
+        self.send_generic_command(command)
+
+    @with_argparser(PARSERS.rmdir, preserve_quotes=True)
+    def do_rmdir(self, args):
+        """[Linux] Remove (delete) empty directories."""
+        if args.parents:
+            command = f"rmdir -p {args.directory}"
+        else:
+            command = f"rmdir {args.directory}"
 
         self.send_generic_command(command)
 
