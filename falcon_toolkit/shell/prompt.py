@@ -869,7 +869,11 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.mkdir, preserve_quotes=True)
     def do_mkdir(self, args):
         """Create a new directory."""
-        command = f"mkdir {args.directory}"
+        if args.parents:
+            command = f"mkdir -p {args.directory}"
+        else:
+            command = f"mkdir {args.directory}"
+
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.mount, preserve_quotes=True)
@@ -982,6 +986,10 @@ class RTRPrompt(Cmd):
         """Remove (delete) a file or directory."""
         if args.force:
             command = f"rm {args.path} -Force"
+        elif args.recursive:
+            command = f"rm {args.path} -r"
+        elif args.directory:
+            command = f"rm {args.path} -d"
         else:
             command = f"rm {args.path}"
 
