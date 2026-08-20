@@ -467,10 +467,25 @@ rm_argparser.add_argument(
     "path",
     help="File or directory to delete",
 )
-rm_argparser.add_argument(
+rm_group = rm_argparser.add_mutually_exclusive_group()
+rm_group.add_argument(
     "-Force",
     dest="force",
-    help="Flag to allow directory and recursive deletes",
+    help="[Windows] Flag to allow directory and recursive deletes",
+    action="store_true",
+)
+rm_group.add_argument(
+    "-r",
+    "--recursive",
+    dest="recursive",
+    help="[Linux/macOS] Flag to allow directory and recursive deletes",
+    action="store_true",
+)
+rm_group.add_argument(
+    "-d",
+    "--dir",
+    dest="directory",
+    help="[Linux/macOS] Flag to allow empty directory deletes",
     action="store_true",
 )
 
