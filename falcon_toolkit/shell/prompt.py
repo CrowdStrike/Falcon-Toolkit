@@ -982,6 +982,10 @@ class RTRPrompt(Cmd):
         """Remove (delete) a file or directory."""
         if args.force:
             command = f"rm {args.path} -Force"
+        elif args.recursive:
+            command = f"rm {args.path} -r"
+        elif args.directory:
+            command = f"rm {args.path} -d"
         else:
             command = f"rm {args.path}"
 
