@@ -281,6 +281,13 @@ mkdir_argparser.add_argument(
     "directory",
     help="Name of new directory to create",
 )
+mkdir_argparser.add_argument(
+    "-p",
+    "--parents",
+    dest="parents",
+    help="[Linux/macOS] Create directory and its parents",
+    action="store_true",
+)
 
 mount_argparser = Cmd2ArgumentParser()
 mount_subparsers = mount_argparser.add_subparsers(
