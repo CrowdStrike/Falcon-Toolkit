@@ -45,6 +45,9 @@ from falcon_toolkit.shell.utils import output_falcon_script_result, output_file_
 class RTRPrompt(Cmd):
     """Implement a Cmd2 REPL that provides batch RTR functionality."""
 
+    # Group all RTR commands in the help output separately from Cmd2's built-in commands
+    DEFAULT_CATEGORY = "RTR Commands"
+
     last_batch_get_id = None
     last_batch_get_completed_uploads = 0
     last_batch_get_successful_requests = 0
@@ -86,6 +89,7 @@ class RTRPrompt(Cmd):
             allow_cli_args=False,
             startup_script=startup_script,
             include_py=True,
+            intro=self.INTRO,
         )
 
         # This allows inline Python scripts to execute commands on the shell by calling rtr(cmd)
@@ -255,12 +259,13 @@ class RTRPrompt(Cmd):
             self.timeout,
         )
 
-    intro = (
+    INTRO = (
         "Welcome to the RTR Shell. Type 'help' or '?' to list the available commands.\n"
         "The first host in each response will have its output written to screen. "
         "All hosts will have their outputs written to CSV.\n"
     )
-    prompt = "initialising..."
+    # Cmd2 assigns this to self.prompt during __init__; it is replaced by _set_prompt() later on
+    DEFAULT_PROMPT = "initialising..."
 
     def _derive_root_path(self) -> str:
         r"""Derive the root path to be used for the REPL prompt.
