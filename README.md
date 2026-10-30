@@ -97,7 +97,7 @@ falcon-toolkit is already at latest version 3.0.1
 <h3>Installing via Poetry (Recommended for Developers and Maintainers)</h3>
 </summary>
 
-This tool is built using [Poetry](https://python-poetry.org) and Python 3. Therefore, you must first ensure that you have both Poetry and Python 3.9+ installed to make use of this tool. Ensure you pay attention to Step 3 of the [Poetry installation instructions](https://python-poetry.org/docs/master/#installing-with-the-official-installer) so that you get Poetry added to your shell's `PATH` variable.
+This tool is built using [Poetry](https://python-poetry.org) and Python 3. Therefore, you must first ensure that you have both Poetry and Python 3.11+ installed to make use of this tool. Ensure you pay attention to Step 3 of the [Poetry installation instructions](https://python-poetry.org/docs/master/#installing-with-the-official-installer) so that you get Poetry added to your shell's `PATH` variable.
 
 Once Poetry is installed and loaded in your shell, simply clone this repository from GitHub and run `poetry install` within the `Falcon-Toolkit` directory to get all the necessary requirements set up in a virtual environment.
 
