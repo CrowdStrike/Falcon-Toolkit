@@ -284,7 +284,7 @@ quit
 <h4>Python Scripting API</h4>
 </summary>
 
-This tool is build on top of the excellent [Cmd2](https://cmd2.readthedocs.io/) Python library, which brings with it copious extensibility. It is possible to write Python scripts that run within the context of the Toolkit's shell with programmatic logic applied. This feature is very much in beta, and we are actively seeking feedback on which state data should be made available globally to aid in programmatic scripting of the shell.
+This tool is built on top of the excellent [Cmd2](https://cmd2.readthedocs.io/) Python library, which brings with it copious extensibility. It is possible to write Python scripts that run within the context of the Toolkit's shell with programmatic logic applied. This feature is very much in beta, and we are actively seeking feedback on which state data should be made available globally to aid in programmatic scripting of the shell.
 
 Information on Cmd2's scripting backend is provided [here](https://cmd2.readthedocs.io/en/stable/features/scripting/#python-scripts). The backend is configured as follows:
 
