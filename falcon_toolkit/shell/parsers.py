@@ -555,7 +555,6 @@ tar_argparser.add_argument(
     "-f",
     "--filename",
     help="Target tar filename. Relative or absolute.",
-    nargs=1,
     dest="filename",
 )
 tar_create_update_argparser = tar_argparser.add_mutually_exclusive_group(required=True)
