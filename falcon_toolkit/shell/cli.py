@@ -106,7 +106,9 @@ from falcon_toolkit.shell.prompt import RTRPrompt
         "If not specified, attempts to connect to all hosts regardless of state"
     ),
 )
-def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-positional-arguments
+# pylint: disable=too-many-arguments,too-many-locals,too-many-positional-arguments
+# pylint: disable=too-many-branches,too-many-statements
+def cli_shell(
     ctx: click.Context,
     device_id_list: str,
     device_id_file: str,
