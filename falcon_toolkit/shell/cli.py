@@ -131,7 +131,8 @@ def cli_shell(  # pylint: disable=too-many-arguments,too-many-locals,too-many-po
          is passed to the CLI via the -df switch
     - Optionally filtering devices by online state (online, offline, unknown) via -o/--online-state.
       If not specified, all systems are included regardless of state, as systems in "unknown" state
-      may still accept RTR connections, and systems can transition states between query and connection
+      may still accept RTR connections, and systems can transition states between query and
+      connection
     - Configuring the output CSV for all commands to be logged to
 
     Once we have all the required information together, we configure an RTRPrompt object then
