@@ -496,6 +496,19 @@ rm_group.add_argument(
     action="store_true",
 )
 
+rmdir_argparser = Cmd2ArgumentParser()
+rmdir_argparser.add_argument(
+    "directory",
+    help="Empty directory to delete",
+)
+rmdir_argparser.add_argument(
+    "-p",
+    "--parents",
+    dest="parents",
+    help="Remove directory and its ancestors",
+    action="store_true",
+)
+
 run_argparser = Cmd2ArgumentParser()
 run_argparser.add_argument(
     "executable",
@@ -752,9 +765,11 @@ _PARSERS = {
     "put": put_argparser,
     "put_and_run": put_and_run_argparser,
     "put_files": Cmd2ArgumentParser(),
+    "pwd": Cmd2ArgumentParser(),
     "reg": reg_argparser,
     "restart": restart_argparser,
     "rm": rm_argparser,
+    "rmdir": rmdir_argparser,
     "run": run_argparser,
     "runscript": runscript_argparser,
     "shutdown": shutdown_argparser,
