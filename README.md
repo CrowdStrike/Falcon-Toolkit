@@ -52,35 +52,6 @@ installed package falcon-toolkit 3.0.1, installed using Python 3.11.0
 
 Once installed, run the `falcon` command to test it.
 
-#### Configuring `readline` when installed via `pipx`
-
-If you see a message like this, read on...
-
-```shell
-$ falcon
-Readline features including tab completion have been disabled because
-no supported version of readline was found. To resolve this, install
-pyreadline3 on Windows or gnureadline on Linux/Mac.
-```
-
-This is caused by Python installations compiled against a non-supported `readline` library, such as `libedit` on macOS. To fix it, run the following command to install a supported readline library.
-
-Windows:
-
-```shell
-> pipx inject falcon-toolkit pyreadline3
-injected package pyreadline3 into venv falcon-toolkit
-done! ✨ 🌟 ✨
-```
-
-Linux or macOS:
-
-```shell
-$ pipx inject falcon-toolkit gnureadline
-injected package gnureadline into venv falcon-toolkit
-done! ✨ 🌟 ✨
-```
-
 #### Upgrading Falcon Toolkit when installed via `pipx`
 
 When installed via `pipx`, you can upgrade Falcon Toolkit by simply running:
@@ -106,39 +77,6 @@ Next, run  `poetry shell` to enter the virtual environment.
 Finally, run the `falcon` command to get started! If this succeeds and you get some help output, you're ready to go.
 
 If you close your shell, simply run `poetry shell` to get back in to the virtual environment. This will bring back the `falcon` command.
-
-#### Configuring `readline` when installed via Poetry
-
-If you see a message like this, read on...
-
-```shell
-$ falcon
-Readline features including tab completion have been disabled because
-no supported version of readline was found. To resolve this, install
-pyreadline3 on Windows or gnureadline on Linux/Mac.
-```
-
-This is caused by Python installations compiled against a non-supported `readline` library, such as `libedit` on macOS. To fix it, run the following commands to install a supported readline library.
-
-Windows:
-
-```shell
-# Enter the Poetry virtual environment
-> poetry shell
-
-# Install pyreadline3 in the virtual environment
-> pip install pyreadline3
-```
-
-Linux or macOS:
-
-```shell
-# Enter the Poetry virtual environment
-$ poetry shell
-
-# Install gnureadline in the virtual environment
-$ pip install gnureadline
-```
 
 #### Upgrading Falcon Toolkit when installed via Poetry
 
@@ -348,9 +286,9 @@ quit
 
 This tool is build on top of the excellent [Cmd2](https://cmd2.readthedocs.io/) Python library, which brings with it copious extensibility. It is possible to write Python scripts that run within the context of the Toolkit's shell with programmatic logic applied. This feature is very much in beta, and we are actively seeking feedback on which state data should be made available globally to aid in programmatic scripting of the shell.
 
-Information on Cmd2's scripting backend is provided [here](https://cmd2.readthedocs.io/en/stable/features/scripting.html#python-scripts). The backend is configured as follows:
+Information on Cmd2's scripting backend is provided [here](https://cmd2.readthedocs.io/en/stable/features/scripting/#python-scripts). The backend is configured as follows:
 
-- The RTR Shell's application [bridge name](https://cmd2.readthedocs.io/en/stable/features/scripting.html#basics) is `rtr`, so `rtr("runscript -Raw \"Get-ChildItem\"")` would execute the `Get-ChildItem` PowerShell command against all connected systems from within a custom PyScript.
+- The RTR Shell's application [bridge name](https://cmd2.readthedocs.io/en/stable/features/scripting/#basics) is `rtr`, so `rtr("runscript -Raw \"Get-ChildItem\"")` would execute the `Get-ChildItem` PowerShell command against all connected systems from within a custom PyScript.
 - The `self` functionality is enabled, enabling developers to introspect data stored within the RTR Shell itself. In this context, `self` will refer to the instantiated `RTRPrompt` object defined in `falcon_toolkit/shell/prompt.py`.
 
 Some example usages of this functionality are as follows:
