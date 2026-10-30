@@ -10,7 +10,6 @@ from caracara.modules.prevention_policies import PreventionPoliciesApiModule
 from caracara.modules.response_policies import ResponsePoliciesApiModule
 from colorama import Fore
 
-
 ASCII_OFF_BUTTON = (
     f"{Fore.RED}-----------{Fore.RESET}\n"
     f"{Fore.RED}|   OFF   |{Fore.RESET}\n"

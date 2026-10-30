@@ -869,7 +869,11 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.mkdir, preserve_quotes=True)
     def do_mkdir(self, args):
         """Create a new directory."""
-        command = f"mkdir {args.directory}"
+        if args.parents:
+            command = f"mkdir -p {args.directory}"
+        else:
+            command = f"mkdir {args.directory}"
+
         self.send_generic_command(command)
 
     @with_argparser(PARSERS.mount, preserve_quotes=True)
@@ -956,6 +960,11 @@ class RTRPrompt(Cmd):
                 self.poutput(Style.RESET_ALL + put_file["description"])
             self.poutput()
 
+    @with_argparser(PARSERS.pwd, preserve_quotes=True)
+    def do_pwd(self, args):
+        """[Linux/macOS] Print the full filename of the current working directory."""
+        self.send_generic_command("pwd")
+
     @with_argparser(PARSERS.reg, preserve_quotes=True)
     def do_reg(self, args):
         """[Windows] Registry manipulation. Subcommands: delete, load, query, set, unload."""
@@ -982,8 +991,22 @@ class RTRPrompt(Cmd):
         """Remove (delete) a file or directory."""
         if args.force:
             command = f"rm {args.path} -Force"
+        elif args.recursive:
+            command = f"rm {args.path} -r"
+        elif args.directory:
+            command = f"rm {args.path} -d"
         else:
             command = f"rm {args.path}"
+
+        self.send_generic_command(command)
+
+    @with_argparser(PARSERS.rmdir, preserve_quotes=True)
+    def do_rmdir(self, args):
+        """[Linux] Remove (delete) empty directories."""
+        if args.parents:
+            command = f"rmdir -p {args.directory}"
+        else:
+            command = f"rmdir {args.directory}"
 
         self.send_generic_command(command)
 
@@ -1043,7 +1066,7 @@ class RTRPrompt(Cmd):
         tar_file = args.filename
         mode = "-c" if args.create else "-u"
         source = args.source
-        if args.auto:
+        if args.compress_auto:
             compression = "-a"
         elif args.gzip:
             compression = "-z"
@@ -1096,5 +1119,8 @@ class RTRPrompt(Cmd):
     @with_argparser(PARSERS.zip, preserve_quotes=True)
     def do_zip(self, args):
         """Compress a file or directory into a zip file."""
-        command = f"zip {args.source} {args.destination}"
+        if args.recursive:
+            command = f"zip -r {args.source} {args.destination}"
+        else:
+            command = f"zip {args.source} {args.destination}"
         self.send_generic_command(command)

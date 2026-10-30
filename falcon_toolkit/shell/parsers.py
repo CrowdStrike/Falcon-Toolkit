@@ -281,6 +281,13 @@ mkdir_argparser.add_argument(
     "directory",
     help="Name of new directory to create",
 )
+mkdir_argparser.add_argument(
+    "-p",
+    "--parents",
+    dest="parents",
+    help="[Linux/macOS] Create directory and its parents",
+    action="store_true",
+)
 
 mount_argparser = Cmd2ArgumentParser()
 mount_subparsers = mount_argparser.add_subparsers(
@@ -467,10 +474,38 @@ rm_argparser.add_argument(
     "path",
     help="File or directory to delete",
 )
-rm_argparser.add_argument(
+rm_group = rm_argparser.add_mutually_exclusive_group()
+rm_group.add_argument(
     "-Force",
     dest="force",
-    help="Flag to allow directory and recursive deletes",
+    help="[Windows] Flag to allow directory and recursive deletes",
+    action="store_true",
+)
+rm_group.add_argument(
+    "-r",
+    "--recursive",
+    dest="recursive",
+    help="[Linux/macOS] Flag to allow directory and recursive deletes",
+    action="store_true",
+)
+rm_group.add_argument(
+    "-d",
+    "--dir",
+    dest="directory",
+    help="[Linux/macOS] Flag to allow empty directory deletes",
+    action="store_true",
+)
+
+rmdir_argparser = Cmd2ArgumentParser()
+rmdir_argparser.add_argument(
+    "directory",
+    help="Empty directory to delete",
+)
+rmdir_argparser.add_argument(
+    "-p",
+    "--parents",
+    dest="parents",
+    help="Remove directory and its ancestors",
     action="store_true",
 )
 
@@ -555,7 +590,6 @@ tar_argparser.add_argument(
     "-f",
     "--filename",
     help="Target tar filename. Relative or absolute.",
-    nargs=1,
     dest="filename",
 )
 tar_create_update_argparser = tar_argparser.add_mutually_exclusive_group(required=True)
@@ -693,6 +727,13 @@ zip_argparser.add_argument(
     "destination",
     help="Target zip file name. Relative or absolute path.",
 )
+zip_argparser.add_argument(
+    "-r",
+    "--recurse-paths",
+    help="[Linux/macOS] Travel the directory structure recursively",
+    action="store_true",
+    dest="recursive",
+)
 
 _PARSERS = {
     "cat": cat_argparser,
@@ -724,9 +765,11 @@ _PARSERS = {
     "put": put_argparser,
     "put_and_run": put_and_run_argparser,
     "put_files": Cmd2ArgumentParser(),
+    "pwd": Cmd2ArgumentParser(),
     "reg": reg_argparser,
     "restart": restart_argparser,
     "rm": rm_argparser,
+    "rmdir": rmdir_argparser,
     "run": run_argparser,
     "runscript": runscript_argparser,
     "shutdown": shutdown_argparser,
